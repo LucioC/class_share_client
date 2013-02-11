@@ -11,7 +11,7 @@
          TextureView, etc.
     -->
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,7 +20,7 @@
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
         android:textSize="50sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" /> -->
 
     <!--
          This FrameLayout insets its children based on system windows using
@@ -50,6 +50,44 @@
                 android:layout_weight="1"
                 android:text="@string/dummy_button" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/start"
+                android:layout_width="140dp"
+                android:layout_height="80dp"
+                android:text="@string/start_button"
+                android:onClick="startPresentation"  />
+
+            <Button
+                android:id="@+id/next"
+                android:layout_width="140dp"
+                android:layout_height="80dp"
+                android:text="@string/next_button"
+                android:onClick="goToNextSlide"/>
+
+            <Button
+                android:id="@+id/previous"
+                android:layout_width="140dp"
+                android:layout_height="80dp"
+                android:text="@string/previous_button"
+                android:onClick="goToPreviosuSlide"/>
+            
+            
+            <Button
+                android:id="@+id/close"
+                android:layout_width="140dp"
+                android:layout_height="80dp"
+                android:text="@string/close_button"
+                android:onClick="closePresentation"/>
+
+        </LinearLayout>
+
     </FrameLayout>
 
 </FrameLayout>

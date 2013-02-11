@@ -4,5 +4,9 @@
     <string name="app_name">ClassServiceClient</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="dummy_button">Dummy Button</string>
+    <string name="start_button">Start Presentation</string>
+    <string name="next_button">Next Slide</string>
+    <string name="previous_button">Previous Slide</string>
+    <string name="close_button">Close Presentation</string>
 
 </resources>

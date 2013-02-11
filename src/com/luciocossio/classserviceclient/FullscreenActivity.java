@@ -1,12 +1,21 @@
 package com.luciocossio.classserviceclient;
 
+import com.luciocossio.classclient.PresentationClient;
+import com.luciocossio.classclient.RESTApacheClient;
+import com.luciocossio.classclient.RESTJsonClient;
+import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classserviceclient.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,6 +31,8 @@ public class FullscreenActivity extends Activity {
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
 	private static final boolean AUTO_HIDE = true;
+	
+	private ProgressDialog dialog;
 
 	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -44,6 +55,13 @@ public class FullscreenActivity extends Activity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	
+	private PresentationAsyncTask presentationTask;
+	
+	private final String START_PRESENTATION = "START";
+	private final String NEXT_SLIDE = "NEXT";
+	private final String PREVIOUS_SLIDE = "PREVIOUS";
+	private final String CLOSE_PRESENTATION = "CLOSE";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +70,7 @@ public class FullscreenActivity extends Activity {
 		setContentView(R.layout.activity_fullscreen);
 
 		final View controlsView = findViewById(R.id.fullscreen_content_controls);
-		final View contentView = findViewById(R.id.fullscreen_content);
+		final View contentView = findViewById(R.id.content_layout);
 
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
@@ -100,7 +118,7 @@ public class FullscreenActivity extends Activity {
 				});
 
 		// Set up the user interaction to manually show or hide the system UI.
-		contentView.setOnClickListener(new View.OnClickListener() {
+	/*	contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (TOGGLE_ON_CLICK) {
@@ -109,13 +127,20 @@ public class FullscreenActivity extends Activity {
 					mSystemUiHider.show();
 				}
 			}
-		});
+		}); */
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
 		findViewById(R.id.dummy_button).setOnTouchListener(
 				mDelayHideTouchListener);
+		
+		//FIXME hardcoded for test purpose
+		serverUrl = "http://10.1.1.7:8880/";
+		presentationFilename = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
+		InitializePresentationClient();		
+
+		dialog = new ProgressDialog(this);
 	}
 
 	@Override
@@ -159,4 +184,107 @@ public class FullscreenActivity extends Activity {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 	}
+	
+	private PresentationClient presentationClient;
+	private String serverUrl;
+	private String presentationFilename;
+	
+	private void InitializePresentationClient()
+	{
+		RESTJsonClient jsonClient = new RESTApacheClient();
+		presentationClient = new PresentationClient(jsonClient, serverUrl);
+	}
+	
+	public void startPresentation(View view)
+	{
+		PresentationAsyncTask task = new PresentationAsyncTask();
+		task.execute(START_PRESENTATION, presentationFilename);
+	}
+
+	public void goToNextSlide(View view)
+	{
+		PresentationAsyncTask task = new PresentationAsyncTask();
+		task.execute(NEXT_SLIDE);
+	}
+	
+	public void goToPreviosuSlide(View view)
+	{
+		PresentationAsyncTask task = new PresentationAsyncTask();
+		task.execute(PREVIOUS_SLIDE);
+	}
+	
+	public void closePresentation(View view)
+	{
+		PresentationAsyncTask task = new PresentationAsyncTask();
+		task.execute(CLOSE_PRESENTATION);
+	}
+	
+	private class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage> {
+		
+		@Override
+		protected void onPreExecute() {
+			
+			dialog.setMessage("Enviando requisição para o servidor...");			
+			dialog.setOnCancelListener(new OnCancelListener() {
+				
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					if (presentationTask != null) {
+						presentationTask.cancel(true);
+					}
+				}
+			});
+			
+			dialog.show();
+		}
+		
+		@Override
+		protected ResultMessage doInBackground(String... params) {
+			ResultMessage resultMessage = null;
+
+			Log.i("BackGroundCall",params[0]);
+
+			if (params[0].equals(START_PRESENTATION))
+			{
+				resultMessage = presentationClient.startPresentation(params[1]);
+
+				if(resultMessage == null) 
+				{
+					Log.e("BackGroundCall","returning a null result");
+				}
+				else
+				{
+					Log.i("BackGroundCall","result returned ok from function");
+				}
+			}
+			if (params[0].equals(NEXT_SLIDE))
+			{
+				resultMessage = presentationClient.nextSlide();
+			}
+			if (params[0].equals(PREVIOUS_SLIDE))
+			{
+				resultMessage = presentationClient.previousSlide();
+			}
+			if (params[0].equals(CLOSE_PRESENTATION))
+			{
+				resultMessage = presentationClient.closePresentation();
+			}
+
+			return resultMessage;
+		}
+		
+		@Override
+		protected void onPostExecute(ResultMessage result) {
+			if(result == null) 
+			{
+				Log.e("PostExecute","result was null");
+			}
+			else
+			{
+				Log.i("PostExecute",result.getMessage());
+			}
+			dialog.dismiss();
+		}
+	}
+	
 }
