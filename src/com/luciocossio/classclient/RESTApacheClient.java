@@ -1,6 +1,8 @@
 package com.luciocossio.classclient;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,6 +10,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
@@ -67,7 +75,34 @@ public class RESTApacheClient implements RESTJsonClient {
 	@Override
 	public RESTJsonResponse doPost(String location, String jsonContent) {
 		// TODO Auto-generated method stub
+		
+		
 		return null;
+	}
+	
+	@Override
+	public RESTJsonResponse doPostFile(String location, File file, String fileMimetype) {
+		ContentBody cbFile = new FileBody(file, fileMimetype);
+
+		HttpPost httpPost = new HttpPost(location);
+		httpPost.setHeader("Content-Type", fileMimetype);
+		MultipartEntity mpEntity = new MultipartEntity();
+		mpEntity.addPart("userfile", cbFile);
+		httpPost.setEntity(mpEntity);
+		
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		try {
+			httpResponse = client.execute(httpPost);
+			jsonResponse = new RESTJsonResponse(httpResponse.getStatusLine().getStatusCode(), 
+					EntityUtils.toString(httpResponse.getEntity() ));
+						
+			return jsonResponse;
+		} catch (ClientProtocolException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (IOException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		}
 	}
 
 	@Override
@@ -77,9 +112,31 @@ public class RESTApacheClient implements RESTJsonClient {
 	}
 
 	@Override
-	public RESTJsonResponse doPut(String location) {
-		// TODO Auto-generated method stub
-		return null;
+	public RESTJsonResponse doPut(String location, String jsonContent) {
+		
+		HttpPut httpPut = new HttpPut(location);
+		httpPut.setHeader("Content-Type", "application/json");
+		StringEntity jsonEntity;
+		try {
+			jsonEntity = new StringEntity(jsonContent);			
+		} catch (UnsupportedEncodingException e1) {
+			return new RESTJsonResponse(400,"{\"message\": \"Bad json entity\"}"); 
+		}
+		httpPut.setEntity(jsonEntity);
+		
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		try {
+			httpResponse = client.execute(httpPut);
+			jsonResponse = new RESTJsonResponse(httpResponse.getStatusLine().getStatusCode(), 
+					EntityUtils.toString(httpResponse.getEntity() ));
+						
+			return jsonResponse;
+		} catch (ClientProtocolException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (IOException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		}
 	}
 
 }

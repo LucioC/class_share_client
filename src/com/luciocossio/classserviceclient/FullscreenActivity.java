@@ -62,6 +62,7 @@ public class FullscreenActivity extends Activity {
 	private final String NEXT_SLIDE = "NEXT";
 	private final String PREVIOUS_SLIDE = "PREVIOUS";
 	private final String CLOSE_PRESENTATION = "CLOSE";
+	private final String SEND_FILE = "SENDFILE";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class FullscreenActivity extends Activity {
 
 		setContentView(R.layout.activity_fullscreen);
 
-		final View controlsView = findViewById(R.id.fullscreen_content_controls);
+		//final View controlsView = findViewById(R.id.fullscreen_content_controls);
 		final View contentView = findViewById(R.id.content_layout);
 
 		// Set up an instance of SystemUiHider to control the system UI for
@@ -92,22 +93,21 @@ public class FullscreenActivity extends Activity {
 							// in-layout UI controls at the bottom of the
 							// screen.
 							if (mControlsHeight == 0) {
-								mControlsHeight = controlsView.getHeight();
+				//				mControlsHeight = controlsView.getHeight();
 							}
 							if (mShortAnimTime == 0) {
 								mShortAnimTime = getResources().getInteger(
 										android.R.integer.config_shortAnimTime);
 							}
-							controlsView
+			/*				controlsView
 									.animate()
 									.translationY(visible ? 0 : mControlsHeight)
-									.setDuration(mShortAnimTime);
+									.setDuration(mShortAnimTime);*/
 						} else {
 							// If the ViewPropertyAnimator APIs aren't
 							// available, simply show or hide the in-layout UI
 							// controls.
-							controlsView.setVisibility(visible ? View.VISIBLE
-									: View.GONE);
+						//	controlsView.setVisibility(visible ? View.VISIBLE: View.GONE);
 						}
 
 						if (visible && AUTO_HIDE) {
@@ -132,11 +132,10 @@ public class FullscreenActivity extends Activity {
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
-				mDelayHideTouchListener);
+		//findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 		
 		//FIXME hardcoded for test purpose
-		serverUrl = "http://10.1.1.7:8880/";
+		serverUrl = "http://10.1.1.5:8880/";
 		presentationFilename = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
 		InitializePresentationClient();		
 
@@ -194,6 +193,14 @@ public class FullscreenActivity extends Activity {
 		RESTJsonClient jsonClient = new RESTApacheClient();
 		presentationClient = new PresentationClient(jsonClient, serverUrl);
 	}
+	
+
+	public void sendFile(View view)
+	{
+		PresentationAsyncTask task = new PresentationAsyncTask();
+		task.execute(SEND_FILE, "sdcard/DCIM/MISC/presentation.pptx");
+	}
+
 	
 	public void startPresentation(View view)
 	{
@@ -268,6 +275,10 @@ public class FullscreenActivity extends Activity {
 			if (params[0].equals(CLOSE_PRESENTATION))
 			{
 				resultMessage = presentationClient.closePresentation();
+			}
+			if (params[0].equals(SEND_FILE))
+			{
+				resultMessage = presentationClient.uploadFile(params[1], "presentation.pptx");
 			}
 
 			return resultMessage;

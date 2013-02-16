@@ -8,5 +8,6 @@
     <string name="next_button">Next Slide</string>
     <string name="previous_button">Previous Slide</string>
     <string name="close_button">Close Presentation</string>
+    <string name="send_button">Send File</string>
 
 </resources>
