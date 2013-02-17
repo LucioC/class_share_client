@@ -23,11 +23,11 @@ public class PresentationClient {
 		this.serverUrl = serverUrl;
 	}
 	
-	public ResultMessage uploadFile(String localFileName, String fileName)
+	public ResultMessage uploadFile(File file, String fileName)
 	{
 		String url = serverUrl + ADD_FILE_PATH + fileName;
 		
-		return doPostFile(url, localFileName, PPTX_MIMETYPE);		
+		return doPostFile(url, file, PPTX_MIMETYPE);		
 	}
 	
 	public ResultMessage startPresentation(String fileName)
@@ -84,9 +84,8 @@ public class PresentationClient {
 		return message;
 	}
 	
-	private ResultMessage doPostFile(String url, String localFileName, String fileMimetype) {
+	private ResultMessage doPostFile(String url, File file, String fileMimetype) {
 		
-		File file = new File(localFileName);
 		RESTJsonResponse response = restClient.doPostFile(url, file, fileMimetype);
 		
 		ResultMessage message;

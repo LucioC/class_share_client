@@ -1,5 +1,8 @@
 package com.luciocossio.classserviceclient;
 
+import java.io.File;
+
+import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
@@ -9,8 +12,11 @@ import com.luciocossio.classserviceclient.util.SystemUiHider;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -154,15 +160,34 @@ public class FullscreenActivity extends Activity {
 	{
 		RESTJsonClient jsonClient = new RESTApacheClient();
 		presentationClient = new PresentationClient(jsonClient, serverUrl);
+	}	
+
+	private static final int REQUEST_CODE = 1234;
+	private static final String CHOOSER_TITLE = "Select a file";
+	public void sendFile(View view)
+	{		
+		 Intent target = FileUtils.createGetContentIntent();
+		    Intent intent = Intent.createChooser(target, CHOOSER_TITLE);
+		    try {
+		        startActivityForResult(intent, REQUEST_CODE);
+		    } catch (ActivityNotFoundException e) {
+		        // The reason for the existence of aFileChooser
+		    }
 	}
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    switch (requestCode) {
+	    case REQUEST_CODE:  
+	        if (resultCode == RESULT_OK) {  
+	            // The URI of the selected file 
+	            final Uri uri = data.getData();
 
-	public void sendFile(View view)
-	{
-		PresentationAsyncTask task = new PresentationAsyncTask();
-		task.execute(SEND_FILE, "sdcard/DCIM/MISC/presentation.pptx");
+	    		PresentationAsyncTask task = new PresentationAsyncTask();
+	    		task.execute(SEND_FILE, uri.toString());	            
+	        }
+	    }
 	}
-
 	
 	public void startPresentation(View view)
 	{
@@ -240,7 +265,9 @@ public class FullscreenActivity extends Activity {
 			}
 			if (params[0].equals(SEND_FILE))
 			{
-				resultMessage = presentationClient.uploadFile(params[1], "presentation.pptx");
+				Uri uri = Uri.parse(params[1]);
+				File file = FileUtils.getFile(uri);
+				resultMessage = presentationClient.uploadFile(file, file.getName());
 			}
 
 			return resultMessage;
