@@ -104,7 +104,9 @@ public class FullscreenActivity extends Activity {
 		
 		//FIXME hardcoded for test purpose
 		serverUrl = "http://10.1.1.5:8880/";
-		presentationFilename = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
+		//presentationFile = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
+		presentationFilename = "presentation.pptx";
+		
 		InitializePresentationClient();		
 
 		dialog = new ProgressDialog(this);
@@ -184,7 +186,7 @@ public class FullscreenActivity extends Activity {
 	            final Uri uri = data.getData();
 
 	    		PresentationAsyncTask task = new PresentationAsyncTask();
-	    		task.execute(SEND_FILE, uri.toString());	            
+	    		task.execute(SEND_FILE, uri.toString());           
 	        }
 	    }
 	}
@@ -267,6 +269,7 @@ public class FullscreenActivity extends Activity {
 			{
 				Uri uri = Uri.parse(params[1]);
 				File file = FileUtils.getFile(uri);
+				presentationFilename = file.getName();
 				resultMessage = presentationClient.uploadFile(file, file.getName());
 			}
 

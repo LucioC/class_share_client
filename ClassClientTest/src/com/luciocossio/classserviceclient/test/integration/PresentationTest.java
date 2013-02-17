@@ -15,13 +15,18 @@ public class PresentationTest extends TestCase {
 	public final String serverUrl = "http://10.1.1.5:8880/";
 	public final String fileName = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
 	
-	public void testCreateNextPreviousClosePresentation()
+	public void testUploadStartNextPreviousClosePresentation()
 	{
 		RESTJsonClient jsonClient = new RESTApacheClient();
 		PresentationClient client = new PresentationClient(jsonClient, serverUrl);
 		
-		ResultMessage actual = client.startPresentation(fileName);
-		ResultMessage expected = new ResultMessage("Presentation has been started", true);
+		File file = new File(fileName);
+		ResultMessage actual = client.uploadFile(file, "presentation.pptx");
+		ResultMessage expected = new ResultMessage("File was uploaded to server", true);
+		Assert.assertEquals(expected, actual);
+		
+		actual = client.startPresentation("presentation.pptx");
+		expected = new ResultMessage("Presentation has been started", true);
 		Assert.assertEquals(expected, actual);
 		
 		actual = client.nextSlide();
