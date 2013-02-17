@@ -12,10 +12,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
@@ -82,13 +80,12 @@ public class RESTApacheClient implements RESTJsonClient {
 	
 	@Override
 	public RESTJsonResponse doPostFile(String location, File file, String fileMimetype) {
-		ContentBody cbFile = new FileBody(file, fileMimetype);
-
+		
+		FileEntity fileEntity = new FileEntity(file, fileMimetype);
+		
 		HttpPost httpPost = new HttpPost(location);
 		httpPost.setHeader("Content-Type", fileMimetype);
-		MultipartEntity mpEntity = new MultipartEntity();
-		mpEntity.addPart("userfile", cbFile);
-		httpPost.setEntity(mpEntity);
+		httpPost.setEntity(fileEntity);
 		
 		HttpResponse httpResponse;
 		RESTJsonResponse jsonResponse;
