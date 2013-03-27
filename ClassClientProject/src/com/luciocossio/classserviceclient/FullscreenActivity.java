@@ -103,7 +103,7 @@ public class FullscreenActivity extends Activity {
 				});
 		
 		//FIXME hardcoded for test purpose
-		serverUrl = "http://10.1.1.5:8880/";
+		serverUrl = "http://10.100.68.44:8880/";
 		//presentationFile = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
 		presentationFilename = "presentation.pptx";
 		

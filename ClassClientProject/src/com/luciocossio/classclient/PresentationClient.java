@@ -1,7 +1,12 @@
 package com.luciocossio.classclient;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+
 import com.google.gson.Gson;
 
 public class PresentationClient {
@@ -10,7 +15,7 @@ public class PresentationClient {
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
 	private final String CLOSE_PRESENTATION_PATH = "presentation/action";
-	private final String ADD_FILE_PATH = "files/";
+	private final String FILE_PATH = "files/";
 	
 	private RESTJsonClient restClient;
 	private String serverUrl;
@@ -25,9 +30,9 @@ public class PresentationClient {
 	
 	public ResultMessage uploadFile(File file, String fileName)
 	{
-		String url = serverUrl + ADD_FILE_PATH + fileName;
+		String url = serverUrl + FILE_PATH + fileName;
 		
-		return doPostFile(url, file, PPTX_MIMETYPE);		
+		return doPutFile(url, file, PPTX_MIMETYPE);		
 	}
 	
 	public ResultMessage startPresentation(String fileName)
@@ -57,6 +62,14 @@ public class PresentationClient {
 
 		return doPut(url,"{\"command\":\"close\"}");
 	}	
+	
+	public InputStream getFile(String fileName) throws ClientProtocolException, IOException
+	{
+		String url = serverUrl + FILE_PATH + fileName;
+
+		InputStream stream = doGetFile(url);
+		return stream;
+	}	
 
 	private ResultMessage doGetAndReturnResult(Map<String, String> queryParameters, String url) {
 		RESTJsonResponse response = restClient.doGet(url, queryParameters);
@@ -84,9 +97,43 @@ public class PresentationClient {
 		return message;
 	}
 	
+	private InputStream doGetFile(String url) throws ClientProtocolException, IOException {
+		InputStream response = restClient.doGetFile(url);
+
+		return response;
+	}
+	
 	private ResultMessage doPostFile(String url, File file, String fileMimetype) {
 		
 		RESTJsonResponse response = restClient.doPostFile(url, file, fileMimetype);
+		
+		ResultMessage message;
+
+		try
+		{
+			Gson gson = new Gson();
+			message = gson.fromJson(response.getJsonContent(), ResultMessage.class);
+
+			if (response.getHttpStatus() >= 200 && response.getHttpStatus() < 400)
+			{
+				message.setWasSuccessful(true);
+			}
+			else
+			{
+				message.setWasSuccessful(false);
+			}
+		}
+		catch(Exception e)
+		{
+			return new ResultMessage(e.fillInStackTrace().toString(), false);
+		}
+
+		return message;
+	}
+	
+	private ResultMessage doPutFile(String url, File file, String fileMimetype) {
+		
+		RESTJsonResponse response = restClient.doPutFile(url, file, fileMimetype);
 		
 		ResultMessage message;
 

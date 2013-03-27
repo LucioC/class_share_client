@@ -1,7 +1,9 @@
 package com.luciocossio.classclient;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +71,20 @@ public class RESTApacheClient implements RESTJsonClient {
 			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
 		}
 	}
+	
+	@Override
+	public InputStream doGetFile(String location) throws ClientProtocolException, IOException {
+		
+		HttpGet httpGet = new HttpGet(location);
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		
+			httpResponse = client.execute(httpGet);
+			
+			InputStream stream = httpResponse.getEntity().getContent();
+						
+			return stream;
+	}
 
 	@Override
 	public RESTJsonResponse doPost(String location, String jsonContent) {
@@ -84,6 +100,30 @@ public class RESTApacheClient implements RESTJsonClient {
 		FileEntity fileEntity = new FileEntity(file, fileMimetype);
 		
 		HttpPost httpPost = new HttpPost(location);
+		httpPost.setHeader("Content-Type", fileMimetype);
+		httpPost.setEntity(fileEntity);
+		
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		try {
+			httpResponse = client.execute(httpPost);
+			jsonResponse = new RESTJsonResponse(httpResponse.getStatusLine().getStatusCode(), 
+					EntityUtils.toString(httpResponse.getEntity() ));
+						
+			return jsonResponse;
+		} catch (ClientProtocolException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (IOException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		}
+	}
+	
+	@Override
+	public RESTJsonResponse doPutFile(String location, File file, String fileMimetype) {
+		
+		FileEntity fileEntity = new FileEntity(file, fileMimetype);
+		
+		HttpPut httpPost = new HttpPut(location);
 		httpPost.setHeader("Content-Type", fileMimetype);
 		httpPost.setEntity(fileEntity);
 		
