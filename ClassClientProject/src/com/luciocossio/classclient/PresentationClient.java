@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 public class PresentationClient {
 				
 	private final String START_PRESENTATION_PATH = "presentation";
+	private final String IMAGE_COMMAND = "image/action";
 	private final String OPEN_IMAGE_PATH = "image";
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
@@ -77,6 +78,69 @@ public class PresentationClient {
 		String url = serverUrl + OPEN_IMAGE_PATH;
 		
 		return doPut(url, "{\"fileName\":\""+ fileName +"\"}");
+	}
+	
+	public ResultMessage closeImage()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+
+		return doPut(url,"{\"command\":\"close\"}");
+	}	
+	
+	public ResultMessage rotateImageRight()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"rotateright\"}");
+	}
+	
+	public ResultMessage rotateImageLeft()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"rotateleft\"}");
+	}
+
+	public ResultMessage moveImageRight()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"moveright\"}");
+	}
+	
+	public ResultMessage moveImageLeft()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"moveleft\"}");
+	}
+	
+	public ResultMessage moveImageUp()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"moveup\"}");
+	}
+	
+	public ResultMessage moveImageDown()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"movedown\"}");
+	}
+
+	public ResultMessage zoomInImage()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"zoomin\"}");
+	}
+	
+	public ResultMessage zoomOutImage()
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"zoomout\"}");
 	}
 
 	private ResultMessage doGetAndReturnResult(Map<String, String> queryParameters, String url) {
