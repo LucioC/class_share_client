@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 public class PresentationClient {
 				
 	private final String START_PRESENTATION_PATH = "presentation";
+	private final String OPEN_IMAGE_PATH = "image";
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
 	private final String CLOSE_PRESENTATION_PATH = "presentation/action";
@@ -70,6 +71,13 @@ public class PresentationClient {
 		InputStream stream = doGetFile(url);
 		return stream;
 	}	
+	
+	public ResultMessage openImage(String fileName)
+	{		
+		String url = serverUrl + OPEN_IMAGE_PATH;
+		
+		return doPut(url, "{\"fileName\":\""+ fileName +"\"}");
+	}
 
 	private ResultMessage doGetAndReturnResult(Map<String, String> queryParameters, String url) {
 		RESTJsonResponse response = restClient.doGet(url, queryParameters);
