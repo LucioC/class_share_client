@@ -1,12 +1,10 @@
 package com.luciocossio.classclient;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -22,39 +20,19 @@ import org.apache.http.util.EntityUtils;
 public class RESTApacheClient implements RESTJsonClient {
 	
 	HttpClient client;
+	HTTPUtils httpUtils;
 	
 	public RESTApacheClient()
 	{
 		client = new DefaultHttpClient();
-	}
-	
-	public String addQueryParametersToUrl(String url, Map<String, String> queryParameters)
-	{		
-		StringBuilder newUrl = new StringBuilder();
-		newUrl.append(url);
-
-		if (queryParameters != null && queryParameters.size() > 0)
-		{
-			newUrl.append("?");
-			Set<String> keys = queryParameters.keySet();
-			for(String key : keys)
-			{
-				String value = queryParameters.get(key);
-				newUrl.append(key);
-				newUrl.append("=");
-				newUrl.append(value);				
-				newUrl.append("&");
-			}
-			newUrl.deleteCharAt(newUrl.length()-1);
-		}
-		return newUrl.toString();		
-	}
+		httpUtils = new HTTPUtils();
+	}	
 
 	@Override
 	public RESTJsonResponse doGet(String location,
 			Map<String, String> queryParameters) {
 		
-		String newUrl = addQueryParametersToUrl(location, queryParameters);
+		String newUrl = httpUtils.addQueryParametersToUrl(location, queryParameters);
 		
 		HttpGet httpGet = new HttpGet(newUrl);
 		HttpResponse httpResponse;
