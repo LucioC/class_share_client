@@ -9,7 +9,6 @@ import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classserviceclient.util.SystemUiHider;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -18,12 +17,11 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -31,20 +29,9 @@ import android.view.View;
  * 
  * @see SystemUiHider
  */
-public class FullscreenActivity extends Activity {
-	/**
-	 * Whether or not the system UI should be auto-hidden after
-	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-	 */
-	private static final boolean AUTO_HIDE = true;
+public class PowerPointPresentation extends Activity {
 	
 	private ProgressDialog dialog;
-
-	/**
-	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-	 * user interaction before hiding the system UI.
-	 */
-	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
 	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -67,8 +54,10 @@ public class FullscreenActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(R.layout.activity_fullscreen);
+		setContentView(R.layout.powerpoint_presentation);
 
 		//final View controlsView = findViewById(R.id.fullscreen_content_controls);
 		final View contentView = findViewById(R.id.content_layout);
@@ -78,8 +67,9 @@ public class FullscreenActivity extends Activity {
 		mSystemUiHider = SystemUiHider.getInstance(this, contentView,
 				HIDER_FLAGS);
 		mSystemUiHider.setup();
-		mSystemUiHider
-				.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
+		/*mSystemUiHider
+				.setOnVisibilityChangeListener(
+						new SystemUiHider.OnVisibilityChangeListener() {
 					// Cached values.
 					int mControlsHeight;
 					int mShortAnimTime;
@@ -100,7 +90,7 @@ public class FullscreenActivity extends Activity {
 							delayedHide(AUTO_HIDE_DELAY_MILLIS);
 						}
 					}
-				});
+				});*/
 		
 		//FIXME hardcoded for test purpose
 		serverUrl = "http://10.100.68.44:8880/";
@@ -112,31 +102,6 @@ public class FullscreenActivity extends Activity {
 		dialog = new ProgressDialog(this);
 	}
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-
-		// Trigger the initial hide() shortly after the activity has been
-		// created, to briefly hint to the user that UI controls
-		// are available.
-		delayedHide(100);
-	}
-
-	/**
-	 * Touch listener to use for in-layout UI controls to delay hiding the
-	 * system UI. This is to prevent the jarring behavior of controls going away
-	 * while interacting with activity UI.
-	 */
-	View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			return false;
-		}
-	};
-
 	Handler mHideHandler = new Handler();
 	Runnable mHideRunnable = new Runnable() {
 		@Override
@@ -144,15 +109,6 @@ public class FullscreenActivity extends Activity {
 			mSystemUiHider.hide();
 		}
 	};
-
-	/**
-	 * Schedules a call to hide() in [delay] milliseconds, canceling any
-	 * previously scheduled calls.
-	 */
-	private void delayedHide(int delayMillis) {
-		mHideHandler.removeCallbacks(mHideRunnable);
-		mHideHandler.postDelayed(mHideRunnable, delayMillis);
-	}
 	
 	private PresentationClient presentationClient;
 	private String serverUrl;

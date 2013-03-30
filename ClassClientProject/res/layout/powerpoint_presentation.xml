@@ -1,0 +1,52 @@
+<LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+    		xmlns:tools="http://schemas.android.com/tools"
+    		android:background="#0099cc"
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="30dp" 
+            >
+            
+            <Button
+                android:id="@+id/send"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/send_button"
+                android:onClick="sendFile"  
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/start"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/start_button"
+                android:onClick="startPresentation"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/next"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/next_button"
+                android:onClick="goToNextSlide"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/previous"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/previous_button"
+                android:onClick="goToPreviosuSlide"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/close"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/close_button"
+                android:onClick="closePresentation"
+                android:layout_weight="1" />
+
+</LinearLayout>
