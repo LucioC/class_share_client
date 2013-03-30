@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 
-public class ChooseService extends Activity {
+public class ChooseServiceActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,13 +25,13 @@ public class ChooseService extends Activity {
 	
 	public void openPowerPointActivity(View view)
 	{
-		Intent intent = new Intent(this, PowerPointPresentation.class);	
+		Intent intent = new Intent(this, PowerPointPresentationActivity.class);	
 		startActivity(intent);
 	}
 	
 	public void openImagePresentationActivity(View view)
 	{
-		Intent intent = new Intent(this, ImagePresentation.class);	
+		Intent intent = new Intent(this, ImagePresentationActivity.class);	
 		startActivity(intent);
 	}
 

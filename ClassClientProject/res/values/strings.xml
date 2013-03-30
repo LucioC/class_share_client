@@ -22,5 +22,8 @@
     <string name="image_zoom_in_button">Zoom In</string>
     <string name="image_zoom_out_button">Zoom out</string>
     <string name="title_activity_image_presentation">ImagePresentation</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_control_power_point">ControlPowerPointActivity</string>
+    <string name="title_activity_control_image_presentation">ControlImagePresentationActivity</string>
 
 </resources>

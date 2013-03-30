@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.luciocossio.classserviceclient.PowerPointPresentation"
+            android:name="com.luciocossio.classserviceclient.PowerPointPresentationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/AppTheme" >
@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.luciocossio.classserviceclient.ChooseService"
+            android:name="com.luciocossio.classserviceclient.ChooseServiceActivity"
             android:label="@string/title_activity_choose_service" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,8 +50,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.luciocossio.classserviceclient.ImagePresentation"
+            android:name="com.luciocossio.classserviceclient.ImagePresentationActivity"
             android:label="@string/title_activity_image_presentation" >
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.OPENABLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.luciocossio.classserviceclient.ControlPowerPointActivity"
+            android:label="@string/title_activity_control_power_point" >
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.OPENABLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.luciocossio.classserviceclient.ControlImagePresentationActivity"
+            android:label="@string/title_activity_control_image_presentation" >
         </activity>
     </application>
 

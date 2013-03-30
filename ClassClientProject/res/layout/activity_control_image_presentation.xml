@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ControlImagePresentationActivity"
+            android:padding="30dp" 
+    		android:background="#0099cc"
+            android:orientation="vertical" >
+            
+    		<Button
+                android:id="@+id/left"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_move_left_button"
+                android:onClick="goToNextSlide"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/right"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_move_right_button"
+                android:onClick="goToPreviosuSlide"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/up"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_move_up_button"
+                android:onClick="closePresentation"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/down"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_move_down_button"
+                android:onClick="goToNextSlide"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/rotate_right"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_rotate_right_button"
+                android:onClick="goToPreviosuSlide"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/rotate_left"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_rotate_left_button"
+                android:onClick="closePresentation"
+                android:layout_weight="1" />            
+            
+            <Button
+                android:id="@+id/zoom_in"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_zoom_in_button"
+                android:onClick="goToPreviosuSlide"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/zoom_out"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/image_zoom_out_button"
+                android:onClick="closePresentation"
+                android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/close"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/close_image_button"
+                android:onClick="closePresentation"
+                android:layout_weight="1" />
+
+</LinearLayout>
