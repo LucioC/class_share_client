@@ -101,7 +101,7 @@ public class ImagePresentationActivity extends Activity {
 			{
 				if(result.getWasSuccessful())
 				{
-					Intent intent = new Intent(thisPanel, ControlPowerPointActivity.class);	
+					Intent intent = new Intent(thisPanel, ControlImagePresentationActivity.class);	
 					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
 					startActivity(intent);
 				}

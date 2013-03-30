@@ -12,7 +12,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/send_button"
-                android:onClick="openPowerPointActivity"  
+                android:onClick="sendFile"  
                 android:layout_weight="1" />
 
             <Button
@@ -20,31 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/image_open_button"
-                android:onClick="openImagePresentationActivity"
+                android:onClick="openImage"
                 android:layout_weight="1" />            
-            
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/image_open_button"
-                android:onClick="openImagePresentationActivity"
-                android:layout_weight="1" />            
-            
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/image_open_button"
-                android:onClick="openImagePresentationActivity"
-                android:layout_weight="1" />            
-            
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/image_open_button"
-                android:onClick="openImagePresentationActivity"
-                android:layout_weight="1" />
 
 </LinearLayout>
