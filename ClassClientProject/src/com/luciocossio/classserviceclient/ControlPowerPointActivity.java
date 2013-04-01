@@ -26,9 +26,9 @@ public class ControlPowerPointActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_control_power_point);
 		
-		Intent intent = getIntent();
+		Intent intent = getIntent();		
+		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);	
 		
-		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);		
 		Log.i("ControlPowerPointActivity", "server url received:" + serverUrl);
 		dialog = new ProgressDialog(this);
 		

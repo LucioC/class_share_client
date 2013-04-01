@@ -20,6 +20,9 @@ import android.view.Window;
 public class ImagePresentationActivity extends Activity {
 
 	private ProgressDialog dialog;
+	private PresentationClient presentationClient;
+	private String serverUrl;
+	private String imageFilename;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,19 +31,16 @@ public class ImagePresentationActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.activity_image_presentation);
+
+		Intent intent = getIntent();		
+		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);
 		
-		//FIXME hardcoded for test purpose
-		serverUrl = "http://10.1.1.4:8880/";
 		imageFilename = "android.jpg";
 		
 		initializePresentationClient();		
 
 		dialog = new ProgressDialog(this);
-	}
-	
-	private PresentationClient presentationClient;
-	private String serverUrl;
-	private String imageFilename;
+	}	
 	
 	private void initializePresentationClient()
 	{
