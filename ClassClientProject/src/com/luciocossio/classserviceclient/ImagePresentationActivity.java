@@ -31,7 +31,7 @@ public class ImagePresentationActivity extends Activity {
 		
 		//FIXME hardcoded for test purpose
 		serverUrl = "http://10.1.1.4:8880/";
-		imageFilename = "presentation.pptx";
+		imageFilename = "android.jpg";
 		
 		initializePresentationClient();		
 
@@ -74,6 +74,7 @@ public class ImagePresentationActivity extends Activity {
 	    			protected ResultMessage ExecuteTask()
 	    			{
 	    				File file = FileUtils.getFile(uri);
+	    				//TODO last name should be hold on success, post execute function
 	    				imageFilename = file.getName();
 	    				return client.uploadFile(file, file.getName());
 	    			}
