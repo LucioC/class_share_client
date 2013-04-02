@@ -29,7 +29,7 @@ public class PowerPointPresentationActivity extends Activity {
 	private ProgressDialog dialog;	
 	private PresentationClient presentationClient;
 	private String serverUrl;
-	private String presentationFilename;
+	private String lastFilename;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class PowerPointPresentationActivity extends Activity {
 		Intent intent = getIntent();		
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);
 		
-		presentationFilename = "presentation.pptx";
+		lastFilename = "presentation.pptx";
 		
 		initializePresentationClient();		
 
@@ -75,14 +75,22 @@ public class PowerPointPresentationActivity extends Activity {
 	        if (resultCode == RESULT_OK) {  
 	            // The URI of the selected file 
 	            final Uri uri = data.getData();
+				final File file = FileUtils.getFile(uri);
 
 	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
 	    			@Override
 	    			protected ResultMessage ExecuteTask()
 	    			{
-	    				File file = FileUtils.getFile(uri);
-	    				presentationFilename = file.getName();
 	    				return client.uploadFile(file, file.getName());
+	    			}
+	    			
+	    			@Override
+	    			protected void OnEndPostExecute(ResultMessage result)
+	    			{
+	    				if(result.getWasSuccessful())
+	    				{
+		    				lastFilename = file.getName();	    					
+	    				}
 	    			}
 	    		};
 	    		
@@ -99,7 +107,7 @@ public class PowerPointPresentationActivity extends Activity {
 			@Override
 			protected ResultMessage ExecuteTask()
 			{
-				return client.startPresentation(presentationFilename);
+				return client.startPresentation(lastFilename);
 				//return null;
 			}			
 			

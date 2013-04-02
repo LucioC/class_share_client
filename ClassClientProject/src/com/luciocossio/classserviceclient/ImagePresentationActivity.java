@@ -22,7 +22,7 @@ public class ImagePresentationActivity extends Activity {
 	private ProgressDialog dialog;
 	private PresentationClient presentationClient;
 	private String serverUrl;
-	private String imageFilename;
+	private String lastFilename;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class ImagePresentationActivity extends Activity {
 		Intent intent = getIntent();		
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);
 		
-		imageFilename = "android.jpg";
+		lastFilename = "android.jpg";
 		
 		initializePresentationClient();		
 
@@ -68,15 +68,22 @@ public class ImagePresentationActivity extends Activity {
 	        if (resultCode == RESULT_OK) {
 	            // The URI of the selected file 
 	            final Uri uri = data.getData();
+				final File file = FileUtils.getFile(uri);
 
 	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
 	    			@Override
 	    			protected ResultMessage ExecuteTask()
 	    			{
-	    				File file = FileUtils.getFile(uri);
-	    				//TODO last name should be hold on success, post execute function
-	    				imageFilename = file.getName();
 	    				return client.uploadFile(file, file.getName());
+	    			}
+
+	    			@Override
+	    			protected void OnEndPostExecute(ResultMessage result)
+	    			{
+	    				if(result.getWasSuccessful())
+	    				{
+		    				lastFilename = file.getName();					
+	    				}
 	    			}
 	    		};
 	    		
@@ -93,7 +100,7 @@ public class ImagePresentationActivity extends Activity {
 			@Override
 			protected ResultMessage ExecuteTask()
 			{
-				return client.openImage(imageFilename);
+				return client.openImage(lastFilename);
 				//return null;
 			}
 			
