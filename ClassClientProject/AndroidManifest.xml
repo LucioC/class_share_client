@@ -79,6 +79,16 @@
             android:label="@string/title_activity_control_image_presentation"
         	android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="com.luciocossio.classserviceclient.ControlImagePresentationActivityGesture"
+            android:label="@string/title_activity_control_image_presentation"
+        	android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.luciocossio.classserviceclient.ControlPowerPointActivityGesture"
+            android:label="@string/title_activity_control_image_presentation"
+        	android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>
