@@ -19,7 +19,8 @@
             android:name="com.luciocossio.classserviceclient.PowerPointPresentationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+        	android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -30,7 +31,8 @@
         <activity
             android:name="com.ipaulpro.afilechooser.FileChooserActivity"
             android:icon="@drawable/ic_chooser"
-            android:label="@string/choose_file" >
+            android:label="@string/choose_file"
+        	android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -42,7 +44,8 @@
         </activity>
         <activity
             android:name="com.luciocossio.classserviceclient.ChooseServiceActivity"
-            android:label="@string/title_activity_choose_service" >
+            android:label="@string/title_activity_choose_service"
+        	android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,7 +54,8 @@
         </activity>
         <activity
             android:name="com.luciocossio.classserviceclient.ImagePresentationActivity"
-            android:label="@string/title_activity_image_presentation" >
+            android:label="@string/title_activity_image_presentation"
+        	android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -61,7 +65,8 @@
         </activity>
         <activity
             android:name="com.luciocossio.classserviceclient.ControlPowerPointActivity"
-            android:label="@string/title_activity_control_power_point" >
+            android:label="@string/title_activity_control_power_point"
+        	android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -71,7 +76,8 @@
         </activity>
         <activity
             android:name="com.luciocossio.classserviceclient.ControlImagePresentationActivity"
-            android:label="@string/title_activity_control_image_presentation" >
+            android:label="@string/title_activity_control_image_presentation"
+        	android:screenOrientation="portrait" >
         </activity>
     </application>
 
