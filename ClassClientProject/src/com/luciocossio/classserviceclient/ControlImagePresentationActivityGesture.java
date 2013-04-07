@@ -4,6 +4,7 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.gestures.FlingDirection;
 import com.luciocossio.gestures.accelerometer.RightAndLeftShake;
 
 import android.os.Bundle;
@@ -56,6 +57,8 @@ public class ControlImagePresentationActivityGesture extends Activity implements
         return super.onTouchEvent(event);
     }
 	
+	
+	private FlingDirection flingDirection = new FlingDirection();
 	class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures"; 
         
@@ -63,6 +66,8 @@ public class ControlImagePresentationActivityGesture extends Activity implements
         public boolean onFling(MotionEvent event1, MotionEvent event2, 
                 float velocityX, float velocityY) {
             Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
+            
+            Log.d(DEBUG_TAG, "FlingDirection: " + flingDirection.onFlingReturnDirection(event1, event2));
             return true;
         }
     }
