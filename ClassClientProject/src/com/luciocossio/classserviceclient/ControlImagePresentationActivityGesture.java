@@ -16,11 +16,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 
@@ -30,7 +30,10 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 	private ProgressDialog dialog;
 	private String serverUrl;
 	private SensorManager sensorManager;
+	
 	private GestureDetectorCompat detector; 
+	private ScaleGestureDetector scaleDetector;
+	private float scaleFactor = 1.f;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 		dialog = new ProgressDialog(this);
 		
 		detector = new GestureDetectorCompat(this, new MyGestureListener());
+	    scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
 		
 		registerAccelerometerListener();
 		
@@ -54,10 +58,25 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 	@Override 
     public boolean onTouchEvent(MotionEvent event){ 
         this.detector.onTouchEvent(event);
+        scaleDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
-    }
-	
-	
+	}
+
+	private class ScaleListener 
+	extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			scaleFactor *= detector.getScaleFactor();
+
+			// Don't let the object get too small or too large.
+			scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
+            Log.d("DEBUG", "Scaling: " + scaleFactor);
+
+			//invalidate();
+			return true;
+		}
+	}	
+
 	private FlingDirection flingDirection = new FlingDirection();
 	class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures"; 
@@ -68,6 +87,14 @@ public class ControlImagePresentationActivityGesture extends Activity implements
             Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
             
             Log.d(DEBUG_TAG, "FlingDirection: " + flingDirection.onFlingReturnDirection(event1, event2));
+            return true;
+        }
+        
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                float distanceY) {
+            Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
+            Log.d(DEBUG_TAG, "onScrollDistances: " + distanceX + " : " + distanceY);
             return true;
         }
     }
