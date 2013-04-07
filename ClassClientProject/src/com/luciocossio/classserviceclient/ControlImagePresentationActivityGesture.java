@@ -14,8 +14,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 
@@ -25,12 +29,13 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 	private ProgressDialog dialog;
 	private String serverUrl;
 	private SensorManager sensorManager;
+	private GestureDetectorCompat detector; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_control_image_presentation);
+		setContentView(R.layout.activity_control_image_presentation_gestures);
 		
 		Intent intent = getIntent();
 		
@@ -38,10 +43,29 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 		Log.i("ControlPowerPointActivity", "server url received:" + serverUrl);
 		dialog = new ProgressDialog(this);
 		
+		detector = new GestureDetectorCompat(this, new MyGestureListener());
+		
 		registerAccelerometerListener();
 		
 		initializePresentationClient();
 	}	
+	
+	@Override 
+    public boolean onTouchEvent(MotionEvent event){ 
+        this.detector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+	
+	class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "Gestures"; 
+        
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, 
+                float velocityX, float velocityY) {
+            Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
+            return true;
+        }
+    }
 	
 	private void registerAccelerometerListener()
 	{
@@ -206,7 +230,7 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 	}
 	
 	private RightAndLeftShake shakeGesture = new RightAndLeftShake();
-	private void updateLinearAcceleration(SensorEvent event)
+	protected void updateLinearAcceleration(SensorEvent event)
 	{
 
 		//CODE FROM ANDROID DEVELOPERS PAGE TO ELIMINATE GRAVITY EFFECT

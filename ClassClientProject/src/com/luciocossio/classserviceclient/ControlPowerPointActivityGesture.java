@@ -24,7 +24,7 @@ public class ControlPowerPointActivityGesture extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_control_power_point);
+		setContentView(R.layout.activity_control_power_point_gestures);
 		
 		Intent intent = getIntent();		
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);	
