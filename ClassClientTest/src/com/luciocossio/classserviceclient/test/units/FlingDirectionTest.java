@@ -1,6 +1,7 @@
 package com.luciocossio.classserviceclient.test.units;
 
 import com.luciocossio.gestures.FlingDirectionIdentifier;
+import com.luciocossio.gestures.Gestures;
 
 import android.view.MotionEvent;
 import junit.framework.TestCase;
@@ -13,7 +14,7 @@ public class FlingDirectionTest extends TestCase {
 		
 		FlingDirectionIdentifier flingDirection = new FlingDirectionIdentifier();
 		
-		String expected = flingDirection.RIGHT;
+		String expected = Gestures.FLING_RIGHT;
 		String actual = flingDirection.onFlingReturnDirection(e1, e2);
 		
 		assertEquals(expected, actual);
@@ -25,7 +26,7 @@ public class FlingDirectionTest extends TestCase {
 		
 		FlingDirectionIdentifier flingDirection = new FlingDirectionIdentifier();
 		
-		String expected = flingDirection.LEFT;
+		String expected = Gestures.FLING_LEFT;
 		String actual = flingDirection.onFlingReturnDirection(e1, e2);
 		
 		assertEquals(expected, actual);
@@ -37,7 +38,7 @@ public class FlingDirectionTest extends TestCase {
 		
 		FlingDirectionIdentifier flingDirection = new FlingDirectionIdentifier();
 		
-		String expected = flingDirection.DOWN;
+		String expected = Gestures.FLING_DOWN;
 		String actual = flingDirection.onFlingReturnDirection(e1, e2);
 		
 		assertEquals(expected, actual);
@@ -49,7 +50,7 @@ public class FlingDirectionTest extends TestCase {
 		
 		FlingDirectionIdentifier flingDirection = new FlingDirectionIdentifier();
 		
-		String expected = flingDirection.UP;
+		String expected = Gestures.FLING_UP;
 		String actual = flingDirection.onFlingReturnDirection(e1, e2);
 		
 		assertEquals(expected, actual);
