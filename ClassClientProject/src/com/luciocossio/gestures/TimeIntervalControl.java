@@ -1,12 +1,12 @@
 package com.luciocossio.gestures;
 
-public class IntervalControl {
+public class TimeIntervalControl {
 	
 	private long lastTriggedTime = 0;
 	
 	private long interval;
 	
-	public IntervalControl(long interval)
+	public TimeIntervalControl(long interval)
 	{
 		this.interval = interval;		
 	}

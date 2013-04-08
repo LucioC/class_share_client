@@ -1,10 +1,10 @@
-package com.luciocossio.gestures;
+package com.luciocossio.gestures.listeners;
 
 import android.util.Log;
 
 import com.luciocossio.gestures.accelerometer.RightAndLeftShake;
 
-public class ShakeGestureIdentificator extends AccelerometerListener {
+public class ShakeGestureListener extends AccelerometerListener {
 	
 	private RightAndLeftShake shakeGesture = new RightAndLeftShake();
 	protected void afterAccelerationUpdated()

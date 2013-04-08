@@ -1,4 +1,4 @@
-package com.luciocossio.gestures;
+package com.luciocossio.gestures.listeners;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -56,6 +56,7 @@ public class AccelerometerListener implements SensorEventListener {
 
 	protected void afterAccelerationUpdated()
 	{
+		
 	}
 	
 	public void onAccuracyChanged(Sensor sensor,int accuracy){

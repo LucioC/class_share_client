@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import com.luciocossio.dsp.filters.FIRHighPassHalfBand;
 import com.luciocossio.gestures.Gestures;
-import com.luciocossio.gestures.IntervalControl;
+import com.luciocossio.gestures.TimeIntervalControl;
 
 public class RightAndLeftShake {
 	
@@ -14,7 +14,7 @@ public class RightAndLeftShake {
 	public float lastXValue = 0;
 	public float lastFilteredXValue = 0;
 	
-	private IntervalControl intervalControl = new IntervalControl(500);
+	private TimeIntervalControl intervalControl = new TimeIntervalControl(500);
 	
 	//high pass filter
 	private FIRHighPassHalfBand filter = new FIRHighPassHalfBand();

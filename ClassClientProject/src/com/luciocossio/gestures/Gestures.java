@@ -13,6 +13,11 @@ public class Gestures {
 	public static final String MOVE_RIGHT = "MOVERIGHT";
 	public static final String MOVE_LEFT = "MOVELEFT";
 	
+	public static final String FLING_UP = "FLINGUP";
+	public static final String FLING_DOWN = "FLINGDOWN";
+	public static final String FLING_RIGHT = "FLINGRIGHT";
+	public static final String FLING_LEFT = "FLINGLEFT";
+	
 	public static final String ZOOM_IN = "ZOOMIN";
 	public static final String ZOOM_OUT = "ZOOMOUT";
 	

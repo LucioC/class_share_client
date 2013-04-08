@@ -4,8 +4,11 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.gestures.AccelerometerListener;
-import com.luciocossio.gestures.FlingDirection;
+import com.luciocossio.gestures.detectors.RotationGestureDetector;
+import com.luciocossio.gestures.listeners.FlingDirectionListener;
+import com.luciocossio.gestures.listeners.RotationListener;
+import com.luciocossio.gestures.listeners.ScaleListener;
+import com.luciocossio.gestures.listeners.ShakeGestureListener;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -14,7 +17,6 @@ import android.content.Intent;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -27,9 +29,9 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 	private ProgressDialog dialog;
 	private String serverUrl;
 	
-	private GestureDetectorCompat detector; 
+	private GestureDetectorCompat simpleGesturesDetector; 
 	private ScaleGestureDetector scaleDetector;
-	private float scaleFactor = 1.f;
+	private RotationGestureDetector rotationDetector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +45,45 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		Log.i("ControlPowerPointActivity", "server url received:" + serverUrl);
 		dialog = new ProgressDialog(this);
 		
-		detector = new GestureDetectorCompat(this, new MyGestureListener());
-	    scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
+		RotationListener rotationListener = new RotationListener(5f) 
+		{			
+			@Override
+			protected void rotationChange(float angleChange, float accumulatedAngle, float lastAngle)
+			{
+		        Log.d("ROTATION", "Do something here for rotation with angle change: " + angleChange + " and accumulated " + accumulatedAngle );				
+			}
+		};
+		rotationDetector = new RotationGestureDetector(rotationListener);
+				
+		FlingDirectionListener flingListener = new FlingDirectionListener()
+		{
+			@Override
+			protected void flingOccured(String side)
+			{
+		        Log.d("FLING", "Do something here for: " + side );				
+			}
+			
+		};		
+		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
+		
+		ScaleListener scaleListener = new ScaleListener(.4f)
+		{
+			@Override
+			protected void scaleChanged(float scaleChange, float newScaleFactor, float oldScaleFactor)
+			{
+				Log.d("SCALE", "Do something here for scale. changed from " + oldScaleFactor + " to " + newScaleFactor);				
+			}
+		};
+	    scaleDetector = new ScaleGestureDetector(this, scaleListener);
 
-	    AccelerometerListener accelerometerListener = new AccelerometerListener();
+	    ShakeGestureListener accelerometerListener = new ShakeGestureListener() 
+	    {
+	    	@Override
+	    	protected void gestureTrigged(String gesture)
+	    	{
+	    		Log.d("GESTURE", "do something here for " + gesture);	
+	    	}	    
+	    };
 	    SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 	    accelerometerListener.registerAccelerometerListener(sensorManager);	
 	    
@@ -55,47 +92,11 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 	
 	@Override 
     public boolean onTouchEvent(MotionEvent event){ 
-        this.detector.onTouchEvent(event);
+        this.simpleGesturesDetector.onTouchEvent(event);
         scaleDetector.onTouchEvent(event);
+        rotationDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
 	}
-
-	private class ScaleListener 
-	extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			scaleFactor *= detector.getScaleFactor();
-
-			// Don't let the object get too small or too large.
-			scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
-            Log.d("DEBUG", "Scaling: " + scaleFactor);
-
-			//invalidate();
-			return true;
-		}
-	}	
-
-	private FlingDirection flingDirection = new FlingDirection();
-	class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "Gestures"; 
-        
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2, 
-                float velocityX, float velocityY) {
-            Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
-            
-            Log.d(DEBUG_TAG, "FlingDirection: " + flingDirection.onFlingReturnDirection(event1, event2));
-            return true;
-        }
-        
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                float distanceY) {
-            Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
-            Log.d(DEBUG_TAG, "onScrollDistances: " + distanceX + " : " + distanceY);
-            return true;
-        }
-    }
 	
 	private void initializePresentationClient()
 	{
@@ -237,8 +238,6 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 			}
 		};
 		task.execute();
-	}	
-	
-	
+	}
 
 }
