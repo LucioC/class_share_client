@@ -65,6 +65,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 			
 		};		
 		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
+		simpleGesturesDetector.setIsLongpressEnabled(false);
 		
 		ScaleListener scaleListener = new ScaleListener(.4f)
 		{
