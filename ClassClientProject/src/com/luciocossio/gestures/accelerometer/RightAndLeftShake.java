@@ -3,6 +3,7 @@ package com.luciocossio.gestures.accelerometer;
 import java.util.LinkedList;
 
 import com.luciocossio.dsp.filters.FIRHighPassHalfBand;
+import com.luciocossio.gestures.Gestures;
 import com.luciocossio.gestures.IntervalControl;
 
 public class RightAndLeftShake {
@@ -18,7 +19,15 @@ public class RightAndLeftShake {
 	//high pass filter
 	private FIRHighPassHalfBand filter = new FIRHighPassHalfBand();
 	
-	public String name = "";
+	private String name = "";
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	public RightAndLeftShake()
 	{
@@ -50,11 +59,11 @@ public class RightAndLeftShake {
 			
 			if(oldXs.get(9) > 0)
 			{				
-				name = "LEFT";
+				setName(Gestures.SHAKE_LEFT);
 			}
 			else
 			{				
-				name = "RIGHT";
+				setName(Gestures.SHAKE_RIGHT);
 			}
 			
 			intervalControl.triggerIt();

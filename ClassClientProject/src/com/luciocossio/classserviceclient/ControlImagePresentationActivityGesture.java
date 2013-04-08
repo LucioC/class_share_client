@@ -4,16 +4,13 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.gestures.AccelerometerListener;
 import com.luciocossio.gestures.FlingDirection;
-import com.luciocossio.gestures.accelerometer.RightAndLeftShake;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -24,12 +21,11 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 
-public class ControlImagePresentationActivityGesture extends Activity implements SensorEventListener  {
+public class ControlImagePresentationActivityGesture extends Activity   {
 	
 	private PresentationClient client;	
 	private ProgressDialog dialog;
 	private String serverUrl;
-	private SensorManager sensorManager;
 	
 	private GestureDetectorCompat detector; 
 	private ScaleGestureDetector scaleDetector;
@@ -49,9 +45,11 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 		
 		detector = new GestureDetectorCompat(this, new MyGestureListener());
 	    scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
-		
-		registerAccelerometerListener();
-		
+
+	    AccelerometerListener accelerometerListener = new AccelerometerListener();
+	    SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+	    accelerometerListener.registerAccelerometerListener(sensorManager);	
+	    
 		initializePresentationClient();
 	}	
 	
@@ -99,15 +97,6 @@ public class ControlImagePresentationActivityGesture extends Activity implements
         }
     }
 	
-	private void registerAccelerometerListener()
-	{
-		sensorManager=(SensorManager)getSystemService(SENSOR_SERVICE);
-		// add listener. The listener will be HelloAndroid (this) class
-		sensorManager.registerListener(this, 
-				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_NORMAL);	
-	}
-
 	private void initializePresentationClient()
 	{
 		RESTJsonClient jsonClient = new RESTApacheClient();
@@ -250,54 +239,6 @@ public class ControlImagePresentationActivityGesture extends Activity implements
 		task.execute();
 	}	
 	
-	private float gravity[] = new float[3];
-	private float linear_acceleration[] = new float[3];
-	public void onSensorChanged(SensorEvent event){
-
-		// check sensor type
-		if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
-			updateLinearAcceleration(event);
-			
-		}
-	}
 	
-	private RightAndLeftShake shakeGesture = new RightAndLeftShake();
-	protected void updateLinearAcceleration(SensorEvent event)
-	{
-
-		//CODE FROM ANDROID DEVELOPERS PAGE TO ELIMINATE GRAVITY EFFECT
-		// In this example, alpha is calculated as t / (t + dT),
-		// where t is the low-pass filter's time-constant and
-		// dT is the event delivery rate.
-		final float alpha = 0.8f;
-
-		// Isolate the force of gravity with the low-pass filter.
-		gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-		gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-		gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-		// Remove the gravity contribution with the high-pass filter.
-		linear_acceleration[0] = event.values[0] - gravity[0];
-		linear_acceleration[1] = event.values[1] - gravity[1];
-		linear_acceleration[2] = event.values[2] - gravity[2];
-
-		// assign directions
-		//float x=linear_acceleration[0];
-		//float y=linear_acceleration[1];
-		//float z=linear_acceleration[2];	
-		
-		boolean shaked = shakeGesture.verifyGesture(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
-		if(shaked)
-		{
-			Log.i("Filtered", Float.toString(shakeGesture.lastFilteredXValue) );
-			Log.i("Not filtered", Float.toString(shakeGesture.lastXValue) );
-			Log.i("Last values", shakeGesture.oldXs.toString() );
-			Log.i("Side", shakeGesture.name);
-		}
-	}
-	
-	public void onAccuracyChanged(Sensor sensor,int accuracy){
-
-	}
 
 }
