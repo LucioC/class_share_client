@@ -22,17 +22,21 @@ public class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage
 	
 	@Override
 	protected void onPreExecute() {
-		
+
 		final PresentationAsyncTask task = this;
-		dialog.setMessage("Enviando requisição para o servidor...");			
-		dialog.setOnCancelListener(new OnCancelListener() {			
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				task.cancel(true);
-			}
-		});
-		
-		dialog.show();
+
+		if(dialog != null)
+		{
+			dialog.setMessage("Enviando requisição para o servidor...");			
+			dialog.setOnCancelListener(new OnCancelListener() {			
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					task.cancel(true);
+				}
+			});
+
+			dialog.show();
+		}
 	}
 	
 	//Should override this for specific task execution
@@ -58,7 +62,10 @@ public class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage
 		{
 			Log.i("PostExecute",result.getMessage());
 		}
-		dialog.dismiss();
+		if(dialog != null)
+		{
+			dialog.dismiss();
+		}
 		OnEndPostExecute(result);
 	}
 	
