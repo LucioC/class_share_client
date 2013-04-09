@@ -5,7 +5,7 @@ import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.gestures.detectors.RotationGestureDetector;
-import com.luciocossio.gestures.listeners.FlingDirectionListener;
+import com.luciocossio.gestures.listeners.FlingAndMoveDirectionListener;
 import com.luciocossio.gestures.listeners.RotationListener;
 import com.luciocossio.gestures.listeners.ScaleListener;
 import com.luciocossio.gestures.listeners.ShakeGestureListener;
@@ -55,13 +55,19 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		};
 		rotationDetector = new RotationGestureDetector(rotationListener);
 				
-		FlingDirectionListener flingListener = new FlingDirectionListener()
+		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
 		{
 			@Override
 			protected void flingOccured(String side)
 			{
 		        Log.d("FLING", "Do something here for: " + side );				
 			}
+			
+			@Override
+			protected void moveChangeOccured(float changeInX, float changeInY)
+		    {
+		        Log.d("MOVE", "Do something here for x " + changeInX + " and y " + changeInY );		
+		    }
 			
 		};		
 		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);

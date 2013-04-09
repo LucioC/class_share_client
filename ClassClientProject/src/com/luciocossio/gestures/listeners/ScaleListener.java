@@ -24,7 +24,7 @@ public class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureList
         float scaleDifference = lastScaleFactor - scaleFactor;
         
         //Trigger event only if there was a difference on the scale
-        if(Math.abs(scaleDifference) > scaleInterval)
+        if(Math.abs(scaleDifference) >= scaleInterval)
         {
         	scaleChanged(scaleDifference, scaleFactor, lastScaleFactor);
         	lastScaleFactor = scaleFactor;

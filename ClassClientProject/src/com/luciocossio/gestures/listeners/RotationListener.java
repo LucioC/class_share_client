@@ -26,7 +26,7 @@ public class RotationListener implements OnRotationGestureListener {
 		accumulatedAngle += angleChange;
 		
 		float difference = accumulatedAngle - lastAngle;		
-		if(Math.abs(difference) > minimunAngleInterval)
+		if(Math.abs(difference) >= minimunAngleInterval)
 		{
 			rotationChange(difference, accumulatedAngle, lastAngle);
 			lastAngle = accumulatedAngle;
