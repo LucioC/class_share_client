@@ -25,5 +25,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_control_power_point">ControlPowerPointActivity</string>
     <string name="title_activity_control_image_presentation">ControlImagePresentationActivity</string>
+    
+    <string name="titlePrefs">Preferences</string>
+    <string name="server">Server</string>
+    <string name="summaryServer">Put the server IP</string>
+    <string name="serverPort">Port</string>
+    <string name="summaryServerPort">Put the server port</string>
 
 </resources>
