@@ -89,7 +89,7 @@
             android:label="@string/title_activity_control_image_presentation"
         	android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".PrefsActivity"
+        <activity android:name="com.luciocossio.classserviceclient.PrefsActivity"
             	  android:label="@string/titlePrefs"></activity>
     </application>
 
