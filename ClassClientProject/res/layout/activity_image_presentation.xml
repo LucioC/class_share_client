@@ -21,6 +21,15 @@
                 android:layout_height="match_parent"
                 android:text="@string/image_open_button"
                 android:onClick="openImage"
-                android:layout_weight="1" />            
+                android:layout_weight="1" />      
+                            
+            <Button
+                android:id="@+id/start2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Start with Gestures"
+                android:onClick="openImage2"
+                android:layout_weight="1" />      
+            
 
 </LinearLayout>

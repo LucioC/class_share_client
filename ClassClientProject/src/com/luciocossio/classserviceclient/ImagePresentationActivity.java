@@ -118,4 +118,30 @@ public class ImagePresentationActivity extends Activity {
 		task.execute();
 	}
 
+	public void openImage2(View view)
+	{
+		final Activity thisPanel = this;
+		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
+		{
+			@Override
+			protected ResultMessage ExecuteTask()
+			{
+				return new ResultMessage("", true);
+				//return client.openImage(lastFilename);
+				//return null;
+			}
+			
+			@Override
+			protected void OnEndPostExecute(ResultMessage result)
+			{
+				if(result.getWasSuccessful())
+				{
+					Intent intent = new Intent(thisPanel, ControlImagePresentationActivityGesture.class);	
+					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
+					startActivity(intent);
+				}
+			}
+		};
+		task.execute();
+	}
 }

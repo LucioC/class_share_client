@@ -8,13 +8,11 @@ import com.luciocossio.gestures.detectors.RotationGestureDetector;
 import com.luciocossio.gestures.listeners.FlingAndMoveDirectionListener;
 import com.luciocossio.gestures.listeners.RotationListener;
 import com.luciocossio.gestures.listeners.ScaleListener;
-import com.luciocossio.gestures.listeners.ShakeGestureListener;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -32,19 +30,31 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 	private GestureDetectorCompat simpleGesturesDetector; 
 	private ScaleGestureDetector scaleDetector;
 	private RotationGestureDetector rotationDetector;
+	
+	private String text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_control_image_presentation_gestures);
-		
+				
 		Intent intent = getIntent();
 		
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);		
 		Log.i("ControlPowerPointActivity", "server url received:" + serverUrl);
 		dialog = new ProgressDialog(this);
 		
+		registerRotationGesture();
+				
+		registerFlingAndMoveGestures();
+		
+		registerScaleGesture();
+	    
+		initializePresentationClient();
+	}
+
+	private void registerRotationGesture() {
 		RotationListener rotationListener = new RotationListener(5f) 
 		{			
 			@Override
@@ -54,51 +64,76 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 			}
 		};
 		rotationDetector = new RotationGestureDetector(rotationListener);
-				
-		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
-		{
-			@Override
-			protected void flingOccured(String side)
-			{
-		        Log.d("FLING", "Do something here for: " + side );				
-			}
-			
-			@Override
-			protected void moveChangeOccured(float changeInX, float changeInY)
-		    {
-		        Log.d("MOVE", "Do something here for x " + changeInX + " and y " + changeInY );		
-		    }
-			
-		};		
-		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
-		simpleGesturesDetector.setIsLongpressEnabled(false);
-		
+	}
+
+	private void registerScaleGesture() {
 		ScaleListener scaleListener = new ScaleListener(.4f)
 		{
 			@Override
 			protected void scaleChanged(float scaleChange, float newScaleFactor, float oldScaleFactor)
 			{
-				Log.d("SCALE", "Do something here for scale. changed from " + oldScaleFactor + " to " + newScaleFactor);				
+				Log.d("SCALE", "Do something here for scale. changed from " + oldScaleFactor + " to " + newScaleFactor);	
 			}
 		};
 	    scaleDetector = new ScaleGestureDetector(this, scaleListener);
+	}
 
-	    ShakeGestureListener accelerometerListener = new ShakeGestureListener() 
-	    {
-	    	@Override
-	    	protected void gestureTrigged(String gesture)
-	    	{
-	    		Log.d("GESTURE", "do something here for " + gesture);	
-	    	}	    
-	    };
-	    SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-	    accelerometerListener.registerAccelerometerListener(sensorManager);	
-	    
-		initializePresentationClient();
+	private void registerFlingAndMoveGestures() {
+		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
+		{
+			@Override
+			protected void flingOccured(String side)
+			{
+		        //if(pointersNumber == 1)
+		        	//Log.d("FLING", "Do something here for: " + side );				
+			}
+			
+			@Override
+			protected void moveChangeOccured(float changeInX, float changeInY)
+		    {
+		        //Log.d("MOVE", "Do something here for x " + changeInX + " and y " + changeInY );	
+		        
+		        float XAbsolute = Math.abs(changeInX);
+		        float YAbsolute = Math.abs(changeInY);
+		        
+		        if(XAbsolute > YAbsolute)
+		        {
+		        	if(changeInX > 0)
+		        	{
+		        		text = "Moved Right";
+		        	}
+		        	else if(changeInX < 0)
+		        	{
+		        		text = "Moved Left";
+		        	}
+		        }
+		        else
+		        {
+		        	if(changeInY > 0)
+		        	{
+		        		text = "Moved Down";   
+		        	}		
+		        	else if(changeInY < 0)
+		        	{
+		        		text = "Moved Up";		        	
+		        	}
+		        }
+		        		
+		        if(pointersNumber == 1)
+		        	Log.i("Move", text);
+		    }
+			
+		};		
+		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
+		simpleGesturesDetector.setIsLongpressEnabled(false);
 	}	
 	
+	int pointersNumber = 0;
+	
 	@Override 
-    public boolean onTouchEvent(MotionEvent event){ 
+    public boolean onTouchEvent(MotionEvent event){ 		
+		pointersNumber = event.getPointerCount();	
+		
         this.simpleGesturesDetector.onTouchEvent(event);
         scaleDetector.onTouchEvent(event);
         rotationDetector.onTouchEvent(event);

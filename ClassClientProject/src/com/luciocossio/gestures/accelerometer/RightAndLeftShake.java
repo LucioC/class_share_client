@@ -20,6 +20,8 @@ public class RightAndLeftShake {
 	private FIRHighPassHalfBand filter = new FIRHighPassHalfBand();
 	
 	private String name = "";
+	
+	private float triggerMagnitude = 0.6f;
 
 	public String getName() {
 		return name;
@@ -52,7 +54,7 @@ public class RightAndLeftShake {
 		if (!intervalControl.hasIntervalPassed()) return false;
 			
 		//Detect when started, a quick change in direction occurs
-		if(Math.abs(x) > 1.0f && !happening)
+		if(Math.abs(x) > triggerMagnitude && !happening)
 		{
 			happening = true;				
 			lastFilteredXValue = x;

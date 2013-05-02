@@ -4,13 +4,18 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.gestures.listeners.FlingAndMoveDirectionListener;
+import com.luciocossio.gestures.listeners.ShakeGestureListener;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.hardware.SensorManager;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 
@@ -20,6 +25,8 @@ public class ControlPowerPointActivityGesture extends Activity {
 	private ProgressDialog dialog;
 	private String serverUrl;
 
+	private GestureDetectorCompat simpleGesturesDetector; 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,8 +39,45 @@ public class ControlPowerPointActivityGesture extends Activity {
 		Log.i("ControlPowerPointActivity", "server url received:" + serverUrl);
 		dialog = new ProgressDialog(this);
 		
+		registerFlingGesture();
+		
 		initializePresentationClient();
-	}	
+		
+		registerShakeGesture();
+	}
+	
+	private void registerShakeGesture() {
+		ShakeGestureListener accelerometerListener = new ShakeGestureListener() 
+	    {
+	    	@Override
+	    	protected void gestureTrigged(String gesture)
+	    	{
+	    		Log.d("GESTURE", "do something here for " + gesture);	
+	    	}	    
+	    };
+	    SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+	    accelerometerListener.registerAccelerometerListener(sensorManager);
+	}
+	
+	@Override 
+    public boolean onTouchEvent(MotionEvent event){		
+        this.simpleGesturesDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+	}
+	
+	public void registerFlingGesture()
+	{
+		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
+		{
+			@Override
+			protected void flingOccured(String side)
+			{
+		        Log.d("FLING", "Do something here for: " + side );				
+			}			
+		};		
+		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
+		simpleGesturesDetector.setIsLongpressEnabled(false);
+	}
 
 	private void initializePresentationClient()
 	{

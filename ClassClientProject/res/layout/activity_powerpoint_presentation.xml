@@ -24,5 +24,13 @@
                 android:text="@string/start_button"
                 android:onClick="startPresentation"
                 android:layout_weight="1" />
+            
+            <Button
+                android:id="@+id/start2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Start with Gestures"
+                android:onClick="startPresentation2"
+                android:layout_weight="1" />
 
 </LinearLayout>

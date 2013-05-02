@@ -23,7 +23,7 @@ public class FlingAndMoveDirectionListener extends GestureDetector.SimpleOnGestu
     	initialPoint = new PointF(event.getX(), event.getY());
     	lastPoint = initialPoint;
     	
-        Log.d("DOWN", "onDown: " + event.toString()); 
+        //Log.d("DOWN", "onDown: " + event.toString()); 
         return true;
     }
     
@@ -32,7 +32,7 @@ public class FlingAndMoveDirectionListener extends GestureDetector.SimpleOnGestu
             float velocityX, float velocityY) {
         
     	String side = flingDirection.onFlingReturnDirection(event1, event2);
-        Log.d("FLING", "FlingDirection: " + side );
+        //Log.d("FLING", "FlingDirection: " + side );
         flingOccured(side);
         
         return true;
@@ -48,7 +48,7 @@ public class FlingAndMoveDirectionListener extends GestureDetector.SimpleOnGestu
 		if(distance >= minimunDistanceInterval)
 		{
 			moveChangeOccured(currentPoint.x - lastPoint.x, currentPoint.y - lastPoint.y);
-			Log.d("SCROLL", "onScroll: " + e1.toString()+e2.toString());     
+			//Log.d("SCROLL", "onScroll: " + e1.toString()+e2.toString());     
 			lastPoint = currentPoint;
 		}
 		
