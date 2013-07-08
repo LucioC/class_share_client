@@ -82,7 +82,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
 		{
 			@Override
-			protected void flingOccured(String side)
+			protected void flingOccurred(String side)
 			{
 		        //if(pointersNumber == 1)
 		        	//Log.d("FLING", "Do something here for: " + side );				

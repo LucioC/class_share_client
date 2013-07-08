@@ -4,14 +4,13 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
 import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.gestures.Gestures;
 import com.luciocossio.gestures.listeners.FlingAndMoveDirectionListener;
-import com.luciocossio.gestures.listeners.ShakeGestureListener;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -41,22 +40,7 @@ public class ControlPowerPointActivityGesture extends Activity {
 		
 		registerFlingGesture();
 		
-		initializePresentationClient();
-		
-		registerShakeGesture();
-	}
-	
-	private void registerShakeGesture() {
-		ShakeGestureListener accelerometerListener = new ShakeGestureListener() 
-	    {
-	    	@Override
-	    	protected void gestureTrigged(String gesture)
-	    	{
-	    		Log.d("GESTURE", "do something here for " + gesture);	
-	    	}	    
-	    };
-	    SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-	    accelerometerListener.registerAccelerometerListener(sensorManager);
+		initializePresentationClient();		
 	}
 	
 	@Override 
@@ -70,9 +54,18 @@ public class ControlPowerPointActivityGesture extends Activity {
 		FlingAndMoveDirectionListener flingListener = new FlingAndMoveDirectionListener(40f)
 		{
 			@Override
-			protected void flingOccured(String side)
+			protected void flingOccurred(String side)
 			{
-		        Log.d("FLING", "Do something here for: " + side );				
+		        Log.d("FLING", "Fling occurred. Side: " + side );	
+		        
+		        if(side.equals(Gestures.FLING_RIGHT))
+		        {
+		        	goToNextSlide(null);
+		        }
+		        else if(side.equals(Gestures.FLING_LEFT))
+		        {
+		        	goToPreviosuSlide(null);
+		        }
 			}			
 		};		
 		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener);
@@ -90,8 +83,7 @@ public class ControlPowerPointActivityGesture extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_control_power_point, menu);
 		return true;
-	}	
-
+	}
 
 	public void goToNextSlide(View view)
 	{

@@ -33,7 +33,7 @@ public class FlingAndMoveDirectionListener extends GestureDetector.SimpleOnGestu
         
     	String side = flingDirection.onFlingReturnDirection(event1, event2);
         //Log.d("FLING", "FlingDirection: " + side );
-        flingOccured(side);
+        flingOccurred(side);
         
         return true;
     }    
@@ -72,7 +72,7 @@ public class FlingAndMoveDirectionListener extends GestureDetector.SimpleOnGestu
     	
     }
     
-    protected void flingOccured(String side)
+    protected void flingOccurred(String side)
     {
     	
     }
