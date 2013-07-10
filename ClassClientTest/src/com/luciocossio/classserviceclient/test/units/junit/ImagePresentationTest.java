@@ -9,16 +9,17 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 
+import com.luciocossio.classclient.ClassClientHTTPCommon;
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.RESTJsonClient;
-import com.luciocossio.classclient.RESTJsonResponse;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.http.RESTJsonClient;
+import com.luciocossio.classclient.http.RESTJsonResponse;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class ImagePresentationTest extends TestCase {
-	PresentationClient presentationClient;
+	ClassClientHTTPCommon presentationClient;
 	RESTJsonClient jsonClient;
 	
 		

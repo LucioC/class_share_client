@@ -1,7 +1,5 @@
 package com.luciocossio.classclient.activities;
 
-import java.io.Console;
-
 import com.luciocossio.classclient.R;
 
 import android.os.Bundle;

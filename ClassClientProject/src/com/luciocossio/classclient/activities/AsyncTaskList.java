@@ -8,13 +8,13 @@ import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import com.luciocossio.classclient.PresentationClient;
 
-public class AsyncTaskImageList extends AsyncTask<String, Void, List<String>> {
+public class AsyncTaskList extends AsyncTask<String, Void, List<String>> {
 	
 	protected PresentationClient client;
 	protected ProgressDialog dialog;
 	protected List<String> result = null;
 	
-	public AsyncTaskImageList(PresentationClient client, ProgressDialog dialog )
+	public AsyncTaskList(PresentationClient client, ProgressDialog dialog )
 	{
 		this.client = client;
 		this.dialog = dialog;
@@ -23,7 +23,7 @@ public class AsyncTaskImageList extends AsyncTask<String, Void, List<String>> {
 	@Override
 	protected void onPreExecute() {
 
-		final AsyncTaskImageList task = this;
+		final AsyncTaskList task = this;
 
 		if(dialog != null)
 		{

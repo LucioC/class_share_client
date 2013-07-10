@@ -1,24 +1,40 @@
 package com.luciocossio.classclient.activities;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.client.ClientProtocolException;
+
 import com.luciocossio.classclient.R;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.RESTApacheClient;
-import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.image.ImageGallery;
+import com.luciocossio.classclient.http.RESTApacheClient;
+import com.luciocossio.classclient.http.RESTJsonClient;
 import com.luciocossio.classserviceclient.util.SystemUiHider;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -26,7 +42,7 @@ import android.view.Window;
  * 
  * @see SystemUiHider
  */
-public class PowerPointPresentationActivity extends Activity {
+public class PowerPointPresentationActivity extends Activity implements OnItemClickListener {
 	
 	private ProgressDialog dialog;	
 	private PresentationClient presentationClient;
@@ -49,6 +65,39 @@ public class PowerPointPresentationActivity extends Activity {
 		initializePresentationClient();		
 
 		dialog = new ProgressDialog(this);
+		
+		ListView listView = (ListView)findViewById(R.id.files);
+		listView.setOnItemClickListener(this);
+		
+		this.updateList();
+	}
+	
+	public void updateList()
+	{		
+		final ListView list = (ListView) findViewById(R.id.files);
+		final Context context = this;
+		
+		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog)
+		{			
+			@Override
+			protected void onPostExecute(List<String> files)
+			{	
+				super.onPostExecute(files);
+				
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, 
+			            android.R.layout.simple_list_item_1);
+				adapter.addAll(files);
+				list.setAdapter(adapter);
+			}
+			
+			@Override
+			protected List<String> ExecuteTask()
+			{
+				List<String> files = client.getPresentationFileNames();
+				return files;
+			}			
+		};
+		task.execute();
 	}
 	
 	private void initializePresentationClient()
@@ -78,7 +127,7 @@ public class PowerPointPresentationActivity extends Activity {
 	            // The URI of the selected file 
 	            final Uri uri = data.getData();
 				final File file = FileUtils.getFile(uri);
-
+				final PowerPointPresentationActivity thisActivity = this;
 	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
 	    			@Override
 	    			protected ResultMessage ExecuteTask()
@@ -91,44 +140,18 @@ public class PowerPointPresentationActivity extends Activity {
 	    			{
 	    				if(result.getWasSuccessful())
 	    				{
-		    				lastFilename = file.getName();	    					
+		    				lastFilename = file.getName();	   
+		    				thisActivity.updateList();
 	    				}
 	    			}
 	    		};
 	    		
-	    		task.execute();           
+	    		task.execute();	    		
 	        }
 	    }
 	}
 	
 	public void startPresentation(View view)
-	{
-		final Activity thisPanel = this;
-		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
-		{
-			@Override
-			protected ResultMessage ExecuteTask()
-			{
-				client.preparePresentation(lastFilename);
-				return client.startPresentation();
-				//return null;
-			}			
-			
-			@Override
-			protected void OnEndPostExecute(ResultMessage result)
-			{
-				if(result.getWasSuccessful())
-				{
-					Intent intent = new Intent(thisPanel, ControlPowerPointActivity.class);	
-					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
-					startActivity(intent);
-				}
-			}
-		};
-		task.execute();
-	}
-	
-	public void startPresentation2(View view)
 	{
 		final Activity thisPanel = this;
 		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
@@ -151,6 +174,14 @@ public class PowerPointPresentationActivity extends Activity {
 			}
 		};
 		task.execute();
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		ListView list = (ListView) findViewById(R.id.files);
+		String selectedFromList = (String) (list.getItemAtPosition(arg2));
+		lastFilename = selectedFromList;		
+		startPresentation(null);
 	}
 	
 }

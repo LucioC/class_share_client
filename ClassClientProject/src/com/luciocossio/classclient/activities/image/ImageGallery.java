@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +24,10 @@ import android.widget.ImageView;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
-import com.luciocossio.classclient.RESTApacheClient;
-import com.luciocossio.classclient.RESTJsonClient;
-import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.activities.AsyncTaskImageList;
+import com.luciocossio.classclient.activities.AsyncTaskList;
 import com.luciocossio.classclient.activities.CommonVariables;
-import com.luciocossio.classclient.activities.PresentationAsyncTask;
+import com.luciocossio.classclient.http.RESTApacheClient;
+import com.luciocossio.classclient.http.RESTJsonClient;
 
 public class ImageGallery extends Activity {
 
@@ -75,7 +72,7 @@ public class ImageGallery extends Activity {
 	public void getImages()
 	{
 		final ImageGallery gallery = this;
-		AsyncTaskImageList task = new AsyncTaskImageList(client, dialog)
+		AsyncTaskList task = new AsyncTaskList(client, dialog)
 		{
 			
 			@Override
@@ -134,11 +131,7 @@ public class ImageGallery extends Activity {
 	private class ImagePagerAdapter extends PagerAdapter {
 		
 		private Uri[] mImages = new Uri[]{};
-		
-		public ImagePagerAdapter()
-		{			
-		}
-		
+				
 		public ImagePagerAdapter(List<String> images)
 		{
 			this.setImages(images);

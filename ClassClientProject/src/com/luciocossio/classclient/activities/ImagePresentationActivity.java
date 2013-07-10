@@ -5,9 +5,9 @@ import com.luciocossio.classclient.R;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.RESTApacheClient;
-import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.http.RESTApacheClient;
+import com.luciocossio.classclient.http.RESTJsonClient;
 
 import android.net.Uri;
 import android.os.Bundle;

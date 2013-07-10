@@ -3,9 +3,9 @@ package com.luciocossio.classserviceclient.test.integration;
 import java.io.File;
 
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.RESTApacheClient;
-import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.http.RESTApacheClient;
+import com.luciocossio.classclient.http.RESTJsonClient;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;

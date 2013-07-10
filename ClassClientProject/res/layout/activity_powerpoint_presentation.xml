@@ -15,22 +15,20 @@
                 android:layout_height="match_parent"
                 android:text="@string/send_button"
                 android:onClick="sendFile"  
-                android:layout_weight="1" />
-
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/start_button"
-                android:onClick="startPresentation"
-                android:layout_weight="1" />
+                android:layout_weight="3" />
             
-            <Button
-                android:id="@+id/start2"
+            <ListView
+                android:id="@+id/files"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Start with Gestures"
-                android:onClick="startPresentation2"
-                android:layout_weight="1" />
+                android:layout_height="match_parent" 
+                android:layout_weight="1"
+   				android:padding="10dp"
+    			android:textSize="20sp"
+        		android:divider="#FFECECEC"
+        		android:dividerHeight="2sp"
+        		android:background="#1080AC"
+        	>                
+                
+            </ListView>
 
 </LinearLayout>

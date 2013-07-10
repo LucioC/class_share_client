@@ -2,9 +2,9 @@ package com.luciocossio.classclient.activities;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
-import com.luciocossio.classclient.RESTApacheClient;
-import com.luciocossio.classclient.RESTJsonClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.http.RESTApacheClient;
+import com.luciocossio.classclient.http.RESTJsonClient;
 import com.luciocossio.gestures.Gestures;
 import com.luciocossio.gestures.listeners.FlingAndMoveDirectionListener;
 

@@ -2,7 +2,7 @@ package com.luciocossio.classserviceclient.test.units.junit;
 
 import java.util.LinkedHashMap;
 
-import com.luciocossio.classclient.HTTPUtils;
+import com.luciocossio.classclient.http.HTTPUtils;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;

@@ -1,4 +1,4 @@
-package com.luciocossio.classclient;
+package com.luciocossio.classclient.http;
 
 import java.util.Map;
 import java.util.Set;
