@@ -49,19 +49,18 @@ public class RESTApacheClient implements RESTJsonClient {
 			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
 		}
 	}
-	
+
 	@Override
 	public InputStream doGetFile(String location) throws ClientProtocolException, IOException {
-		
+
 		HttpGet httpGet = new HttpGet(location);
 		HttpResponse httpResponse;
-		RESTJsonResponse jsonResponse;
-		
-			httpResponse = client.execute(httpGet);
-			
-			InputStream stream = httpResponse.getEntity().getContent();
-						
-			return stream;
+
+		httpResponse = client.execute(httpGet);
+
+		InputStream stream = httpResponse.getEntity().getContent();
+
+		return stream;
 	}
 
 	@Override

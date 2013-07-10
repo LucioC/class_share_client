@@ -1,6 +1,9 @@
 package com.luciocossio.classserviceclient.test.units;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTJsonClient;
@@ -42,6 +45,21 @@ public class PresentationTest extends TestCase {
 		
 		ResultMessage expected = new ResultMessage("hello", true);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());
+	}
+	
+	public void testGetPresentationImageNames()
+	{
+		PresentationClient client = new PresentationClient(jsonClient, "http://localhost.com/");
+		
+		when(jsonClient.doGet(anyString(), anyMap())).thenReturn(new RESTJsonResponse(200, "{\"images\":[\"1\",\"2\"]}"));
+				
+		List<String> actual = client.getCurrentPresentationImageNames();
+		
+		List<String> expected = new ArrayList<String>();
+		expected.add("1");
+		expected.add("2");
+		
+		Assert.assertEquals(expected, actual);
 	}
 	
 	public void testWrongUploadFilePresentation()

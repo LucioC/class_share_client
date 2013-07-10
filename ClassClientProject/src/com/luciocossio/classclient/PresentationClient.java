@@ -3,6 +3,7 @@ package com.luciocossio.classclient;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
@@ -12,6 +13,7 @@ import com.google.gson.Gson;
 public class PresentationClient {
 				
 	private final String START_PRESENTATION_PATH = "presentation";
+	private final String PRESENTATION_SLIDES_PATH = "presentation/slides";
 	private final String IMAGE_COMMAND = "image/action";
 	private final String OPEN_IMAGE_PATH = "image";
 	private final String NEXT_SLIDE_PATH = "presentation/action";
@@ -72,6 +74,13 @@ public class PresentationClient {
 		InputStream stream = doGetFile(url);
 		return stream;
 	}	
+	
+	public InputStream getImage(String imageName) throws ClientProtocolException, IOException
+	{
+		String url = serverUrl + PRESENTATION_SLIDES_PATH + "/" + imageName;
+		InputStream stream = doGetFile(url);
+		return stream;
+	}
 	
 	public ResultMessage openImage(String fileName)
 	{		
@@ -143,14 +152,13 @@ public class PresentationClient {
 		return doPut(url,"{\"command\":\"zoomout\"}");
 	}
 
-	private ResultMessage doGetAndReturnResult(Map<String, String> queryParameters, String url) {
+	private ResultMessage doGet(Map<String, String> queryParameters, String url) {
 		RESTJsonResponse response = restClient.doGet(url, queryParameters);
-		ResultMessage message;	
+		ResultMessage message = new ResultMessage("", false);
 
 		try
 		{
-			Gson gson = new Gson();
-			message = gson.fromJson(response.getJsonContent(), ResultMessage.class);
+			message.setMessage(response.getJsonContent());
 
 			if (response.getHttpStatus() >= 200 && response.getHttpStatus() < 400)
 			{
@@ -255,6 +263,30 @@ public class PresentationClient {
 		}
 
 		return message;
+	}
+
+	public List<String> getCurrentPresentationImageNames() {
+
+		String url = serverUrl + START_PRESENTATION_PATH;
+		
+		ResultMessage message = this.doGet(null, url);
+		
+		Gson gson = new Gson();
+		ListOfImages list = gson.fromJson(message.getMessage(), ListOfImages.class);
+		return list.getImages();
+	}
+	
+	public class ListOfImages
+	{
+		private List<String> images;
+
+		public List<String> getImages() {
+			return images;
+		}
+
+		public void setImages(List<String> images) {
+			this.images = images;
+		}		
 	}
 
 }
