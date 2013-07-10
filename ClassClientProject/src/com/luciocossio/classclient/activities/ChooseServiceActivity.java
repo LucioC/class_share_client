@@ -1,6 +1,8 @@
-package com.luciocossio.classserviceclient;
+package com.luciocossio.classclient.activities;
 
 import java.io.Console;
+
+import com.luciocossio.classclient.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;

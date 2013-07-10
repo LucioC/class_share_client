@@ -1,4 +1,4 @@
-package com.luciocossio.classserviceclient;
+package com.luciocossio.classclient.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;

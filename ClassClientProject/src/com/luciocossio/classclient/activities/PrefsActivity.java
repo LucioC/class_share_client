@@ -1,6 +1,7 @@
-package com.luciocossio.classserviceclient;
+package com.luciocossio.classclient.activities;
 
 import android.os.Bundle;
+import com.luciocossio.classclient.R;
 import android.preference.PreferenceActivity;
 
 public class PrefsActivity extends PreferenceActivity {
