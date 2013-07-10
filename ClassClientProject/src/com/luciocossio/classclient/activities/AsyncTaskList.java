@@ -13,11 +13,13 @@ public class AsyncTaskList extends AsyncTask<String, Void, List<String>> {
 	protected PresentationClient client;
 	protected ProgressDialog dialog;
 	protected List<String> result = null;
+	protected String message;
 	
-	public AsyncTaskList(PresentationClient client, ProgressDialog dialog )
+	public AsyncTaskList(PresentationClient client, ProgressDialog dialog, String message )
 	{
 		this.client = client;
 		this.dialog = dialog;
+		this.message = message;
 	}
 	
 	@Override
@@ -27,7 +29,7 @@ public class AsyncTaskList extends AsyncTask<String, Void, List<String>> {
 
 		if(dialog != null)
 		{
-			dialog.setMessage("Carregando Slides da Apresentação...");			
+			dialog.setMessage(this.message);			
 			dialog.setOnCancelListener(new OnCancelListener() {			
 				@Override
 				public void onCancel(DialogInterface dialog) {

@@ -20,6 +20,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 
 import com.luciocossio.classclient.PresentationClient;
@@ -40,6 +41,8 @@ public class ImageGallery extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		setContentView(R.layout.activity_image_gallery);
 
 		List<String> list = new ArrayList<String>();
@@ -72,7 +75,7 @@ public class ImageGallery extends Activity {
 	public void getImages()
 	{
 		final ImageGallery gallery = this;
-		AsyncTaskList task = new AsyncTaskList(client, dialog)
+		AsyncTaskList task = new AsyncTaskList(client, dialog, "Carregando slides da apresentação...")
 		{
 			
 			@Override

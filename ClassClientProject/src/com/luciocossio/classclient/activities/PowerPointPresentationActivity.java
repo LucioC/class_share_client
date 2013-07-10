@@ -1,14 +1,7 @@
 package com.luciocossio.classclient.activities;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.client.ClientProtocolException;
 
 import com.luciocossio.classclient.R;
 
@@ -27,9 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -77,7 +68,7 @@ public class PowerPointPresentationActivity extends Activity implements OnItemCl
 		final ListView list = (ListView) findViewById(R.id.files);
 		final Context context = this;
 		
-		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog)
+		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog, "Carregando lista de arquivos...")
 		{			
 			@Override
 			protected void onPostExecute(List<String> files)

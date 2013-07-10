@@ -7,8 +7,8 @@ import android.util.Log;
 public class OnImagePageChangeListener implements OnPageChangeListener {
 
 	@Override
-	public void onPageScrollStateChanged(int arg0) {
-		Log.i("ChangeListener", "ScrollStateChanged " + arg0);
+	public void onPageScrollStateChanged(int arg0) {		
+		/*Log.i("ChangeListener", "ScrollStateChanged " + arg0);
 
 		switch(arg0)
 		{
@@ -21,7 +21,7 @@ public class OnImagePageChangeListener implements OnPageChangeListener {
 			case ViewPager.SCROLL_STATE_SETTLING:
 				Log.i("ChangeListener", "ScrollStateChanged settling");
 				break;
-		}
+		} */
 	}
 
 	@Override
