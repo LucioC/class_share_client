@@ -1,4 +1,4 @@
-package com.luciocossio.classserviceclient.test.units;
+package com.luciocossio.classserviceclient.test.units.junit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,8 +81,8 @@ public class PresentationTest extends TestCase {
 		PresentationClient client = new PresentationClient(jsonClient, "http://localhost.com/");
 		
 		when(jsonClient.doPut(anyString(), anyString())).thenReturn(new RESTJsonResponse(200, "{\"message\":\"started\"}"));
-				
-		ResultMessage actual = client.startPresentation("presentation.pptx");
+
+		ResultMessage actual = client.startPresentation();
 		
 		ResultMessage expected = new ResultMessage("started", true);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());
@@ -94,7 +94,7 @@ public class PresentationTest extends TestCase {
 		
 		when(jsonClient.doPut(anyString(), anyString())).thenReturn(new RESTJsonResponse(404, "{\"message\":\"error\"}"));
 				
-		ResultMessage actual = client.startPresentation("presentation.pptx");
+		ResultMessage actual = client.preparePresentation("presentation.pptx");
 		
 		ResultMessage expected = new ResultMessage("error", false);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());

@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 public class ImagePresentationTest extends TestCase {
 	
-	public final String serverUrl = "http://10.1.1.4:8880/";
+	public final String serverUrl = "http://10.1.1.7:8880/";
 	public final String fileName = "C:/Users/lucioc/Dropbox/Public/android.jpg";
 
 	public void testUploadFile()

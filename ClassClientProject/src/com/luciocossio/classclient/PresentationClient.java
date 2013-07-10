@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 public class PresentationClient {
 				
 	private final String START_PRESENTATION_PATH = "presentation";
+	private final String PREPARE_PRESENTATION_PATH = "presentation/prepare";
 	private final String PRESENTATION_SLIDES_PATH = "presentation/slides";
 	private final String IMAGE_COMMAND = "image/action";
 	private final String OPEN_IMAGE_PATH = "image";
@@ -39,9 +40,15 @@ public class PresentationClient {
 		return doPutFile(url, file, PPTX_MIMETYPE);		
 	}
 	
-	public ResultMessage startPresentation(String fileName)
-	{		
-		String url = serverUrl + START_PRESENTATION_PATH;
+	public ResultMessage startPresentation()
+	{
+		String url = serverUrl + START_PRESENTATION_PATH;		
+		return doPut(url, "");
+	}
+	
+	public ResultMessage preparePresentation(String fileName)
+	{
+		String url = serverUrl + PREPARE_PRESENTATION_PATH;
 		
 		return doPut(url, "{\"fileName\":\""+ fileName +"\"}");
 	}

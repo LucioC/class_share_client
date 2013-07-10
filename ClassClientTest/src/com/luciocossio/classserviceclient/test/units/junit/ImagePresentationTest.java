@@ -1,4 +1,4 @@
-package com.luciocossio.classserviceclient.test.units;
+package com.luciocossio.classserviceclient.test.units.junit;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -53,7 +53,7 @@ public class ImagePresentationTest extends TestCase {
 		
 		when(jsonClient.doPut(anyString(), anyString())).thenReturn(new RESTJsonResponse(404, "{\"message\":\"error\"}"));
 				
-		ResultMessage actual = client.startPresentation("image.jpg");
+		ResultMessage actual = client.openImage("image.jpg");
 		
 		ResultMessage expected = new ResultMessage("error", false);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());

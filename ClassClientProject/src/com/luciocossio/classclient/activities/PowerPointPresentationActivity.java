@@ -109,7 +109,8 @@ public class PowerPointPresentationActivity extends Activity {
 			@Override
 			protected ResultMessage ExecuteTask()
 			{
-				return client.startPresentation(lastFilename);
+				client.preparePresentation(lastFilename);
+				return client.startPresentation();
 				//return null;
 			}			
 			
@@ -135,9 +136,7 @@ public class PowerPointPresentationActivity extends Activity {
 			@Override
 			protected ResultMessage ExecuteTask()
 			{
-				return new ResultMessage("", true);
-				//return client.startPresentation(lastFilename);
-				//return null;
+				return client.preparePresentation(lastFilename);
 			}			
 			
 			@Override

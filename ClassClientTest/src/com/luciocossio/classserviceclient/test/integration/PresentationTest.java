@@ -1,12 +1,8 @@
 package com.luciocossio.classserviceclient.test.integration;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.http.client.ClientProtocolException;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.RESTApacheClient;
@@ -18,7 +14,7 @@ import junit.framework.TestCase;
 
 public class PresentationTest extends TestCase {
 	
-	public final String serverUrl = "http://10.1.1.4:8880/";
+	public final String serverUrl = "http://10.1.1.7:8880/";
 	public final String fileName = "C:/Users/lucioc/Dropbox/Public/Mestrado/Dissertacao/PEP/PEP_posM.pptx";
 		
 	public void testUploadStartPresentation()
@@ -31,7 +27,8 @@ public class PresentationTest extends TestCase {
 		ResultMessage expected = new ResultMessage("File was uploaded to server", true);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());
 		
-		actual = client.startPresentation("presentation.pptx");
+		actual = client.preparePresentation("presentation.pptx");
+		actual = client.startPresentation();
 		expected = new ResultMessage("Presentation has been started", true);
 		Assert.assertEquals(expected, actual);
 	}
@@ -45,8 +42,9 @@ public class PresentationTest extends TestCase {
 		ResultMessage actual = client.uploadFile(file, "presentation.pptx");
 		ResultMessage expected = new ResultMessage("File was uploaded to server", true);
 		Assert.assertEquals(expected.getMessage(), actual.getMessage());
-		
-		actual = client.startPresentation("presentation.pptx");
+
+		actual = client.preparePresentation("presentation.pptx");
+		actual = client.startPresentation();
 		expected = new ResultMessage("Presentation has been started", true);
 		Assert.assertEquals(expected, actual);
 		

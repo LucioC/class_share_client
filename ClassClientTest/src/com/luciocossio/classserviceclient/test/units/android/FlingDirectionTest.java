@@ -1,4 +1,4 @@
-package com.luciocossio.classserviceclient.test.units;
+package com.luciocossio.classserviceclient.test.units.android;
 
 import com.luciocossio.gestures.FlingDirectionIdentifier;
 import com.luciocossio.gestures.Gestures;

@@ -1,4 +1,4 @@
-package com.luciocossio.classserviceclient.test.units;
+package com.luciocossio.classserviceclient.test.units.junit;
 
 import java.util.LinkedHashMap;
 
