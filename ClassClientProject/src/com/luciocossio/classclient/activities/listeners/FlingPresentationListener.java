@@ -31,7 +31,10 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
             float velocityX, float velocityY) {
 
     	String side = directionIdentifier.onFlingReturnDirection(event1, event2);
-
+    	float movementDistance = directionIdentifier.totalDistance(event1, event2);
+    	
+    	if(movementDistance < 250) return true;
+    	
     	if(callServer)
     	{
     		if(side == Gestures.FLING_UP)
