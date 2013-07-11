@@ -21,6 +21,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 	private final String OPEN_IMAGE_PATH = "image";
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
+	private final String GOTOSLIDE_PATH = "presentation/action";
 	private final String CLOSE_PRESENTATION_PATH = "presentation/action";
 	private final String FILE_PATH = "files";
 	
@@ -66,6 +67,13 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		String url = serverUrl + PREVIOUS_SLIDE_PATH;
 
 		return doPut(url,"{\"command\":\"previous\"}");
+	}
+	
+	public ResultMessage goToSlideNumber(String slideNumber)
+	{
+		String url = serverUrl + GOTOSLIDE_PATH;
+		
+		return doPut(url,"{\"command\":\"gotoslide\", \"arg\":\"" + slideNumber + "\"}");
 	}
 
 	public ResultMessage closePresentation()

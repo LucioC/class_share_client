@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -25,8 +26,11 @@ import android.widget.ImageView;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
+import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.AsyncTaskList;
 import com.luciocossio.classclient.activities.CommonVariables;
+import com.luciocossio.classclient.activities.PresentationAsyncTask;
+import com.luciocossio.classclient.activities.listeners.FlingPresentationListener;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 
@@ -37,6 +41,8 @@ public class ImageGallery extends Activity {
 	private String serverUrl;
 	
 	ImagePagerAdapter adapter;
+	OnPresentationImagePageChangeListener pageListener;
+	FlingPresentationListener flingListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,13 +55,31 @@ public class ImageGallery extends Activity {
 		
 		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 		adapter = new ImagePagerAdapter(list);
-		viewPager.setOnPageChangeListener(new OnImagePageChangeListener());
-		viewPager.setAdapter(adapter);		
+		viewPager.setAdapter(adapter);	
 		
 		Intent intent = getIntent();		
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);	
 		dialog = new ProgressDialog(this);
-		initializePresentationClient();	
+		initializePresentationClient();
+
+		pageListener = new OnPresentationImagePageChangeListener(client, dialog);
+		viewPager.setOnPageChangeListener(pageListener);
+		
+		final Activity thisPanel = this;
+		flingListener = new FlingPresentationListener(client, dialog)
+		{
+			@Override
+			public void closed()
+			{
+				thisPanel.finish();
+			}				
+
+			@Override
+			public void started()
+			{
+				pageListener.setCallServer(true);
+			}
+		};
 		
 		this.getImages();
 	}	
@@ -160,17 +184,16 @@ public class ImageGallery extends Activity {
 		}
 
 		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
-			//Log.i("FLING", "new picture");
+		public Object instantiateItem(ViewGroup container, int position) {		
 			Context context = ImageGallery.this;
-			CustomImageView imageView = new CustomImageView(context);
+			PresentationImageView imageView = new PresentationImageView(context, flingListener);
 			int padding = context.getResources().getDimensionPixelSize(
 					R.dimen.padding_medium);
 			imageView.setPadding(padding, padding, padding, padding);
 			imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 			imageView.setImageURI(mImages[position]);
-			//imageView.setImageResource(mImages[position]);
 			((ViewPager) container).addView(imageView, 0);
+			
 			return imageView;
 		}
 
