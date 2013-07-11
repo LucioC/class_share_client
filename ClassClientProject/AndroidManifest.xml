@@ -69,7 +69,7 @@
         <activity
             android:name="com.luciocossio.classclient.activities.image.ImageGallery"
             android:label="@string/title_activity_control_image_presentation"
-        	android:screenOrientation="portrait" >
+            android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
             android:name="com.luciocossio.classclient.activities.ControlImagePresentationActivityGesture"
@@ -83,6 +83,20 @@
         </activity>
         <activity android:name="com.luciocossio.classclient.activities.PrefsActivity"
             	  android:label="@string/titlePrefs"></activity>
+        
+        <activity
+    	android:name="com.ipaulpro.afilechooser.FileChooserActivity"
+    	android:icon="@drawable/ic_chooser"
+    	android:label="Choose a file" >
+    	<intent-filter>
+        <action android:name="android.intent.action.GET_CONTENT" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.OPENABLE" />
+
+        <data android:mimeType="*/*" />
+    </intent-filter>
+</activity>
     </application>
 
 </manifest>
