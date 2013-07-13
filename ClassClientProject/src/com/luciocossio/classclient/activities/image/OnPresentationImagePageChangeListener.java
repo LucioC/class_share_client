@@ -2,7 +2,7 @@ package com.luciocossio.classclient.activities.image;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.activities.PresentationAsyncTask;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 
 import android.app.ProgressDialog;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -53,17 +53,13 @@ public class OnPresentationImagePageChangeListener implements OnPageChangeListen
 			PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 			{
 				@Override
-				protected ResultMessage ExecuteTask()
+				protected ResultMessage executeTask()
 				{
 					return client.goToSlideNumber(toSlide);
 				}
 			};
 			task.execute();
 		}
-	}
-	
-	public boolean isCallServerActive() {
-		return callServer;
 	}
 
 	public void setCallServer(boolean callServer) {

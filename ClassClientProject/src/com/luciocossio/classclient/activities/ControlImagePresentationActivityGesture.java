@@ -3,6 +3,7 @@ package com.luciocossio.classclient.activities;
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 import com.luciocossio.gestures.detectors.RotationGestureDetector;
@@ -160,7 +161,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.moveImageUp();
 			}			
@@ -173,7 +174,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.moveImageDown();
 			}			
@@ -186,7 +187,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.moveImageRight();
 			}			
@@ -199,7 +200,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.moveImageLeft();
 			}			
@@ -212,7 +213,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.rotateImageRight();
 			}			
@@ -225,7 +226,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.rotateImageLeft();
 			}			
@@ -238,7 +239,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.zoomInImage();
 			}			
@@ -251,7 +252,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.zoomOutImage();
 			}			
@@ -265,7 +266,7 @@ public class ControlImagePresentationActivityGesture extends Activity   {
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.closeImage();
 				//return null;

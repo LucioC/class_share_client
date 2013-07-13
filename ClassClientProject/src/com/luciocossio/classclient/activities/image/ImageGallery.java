@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -27,22 +28,22 @@ import android.widget.ImageView;
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.activities.AsyncTaskList;
 import com.luciocossio.classclient.activities.CommonVariables;
-import com.luciocossio.classclient.activities.PresentationAsyncTask;
-import com.luciocossio.classclient.activities.listeners.FlingPresentationListener;
+import com.luciocossio.classclient.activities.listeners.FlingAndTouchPresentationListener;
+import com.luciocossio.classclient.async.AsyncTaskList;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 
 public class ImageGallery extends Activity {
 
-	private PresentationClient client;	
-	private ProgressDialog dialog;
-	private String serverUrl;
+	protected PresentationClient client;	
+	protected ProgressDialog dialog;
+	protected String serverUrl;
 	
 	ImagePagerAdapter adapter;
 	OnPresentationImagePageChangeListener pageListener;
-	FlingPresentationListener flingListener;
+	FlingAndTouchPresentationListener flingListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,9 +65,9 @@ public class ImageGallery extends Activity {
 
 		pageListener = new OnPresentationImagePageChangeListener(client, dialog);
 		viewPager.setOnPageChangeListener(pageListener);
-		
+
 		final Activity thisPanel = this;
-		flingListener = new FlingPresentationListener(client, dialog)
+		flingListener = new FlingAndTouchPresentationListener(client, dialog, this)
 		{
 			@Override
 			public void closed()
@@ -80,9 +81,9 @@ public class ImageGallery extends Activity {
 				pageListener.setCallServer(true);
 			}
 		};
-		
+
 		this.getImages();
-	}	
+	}
 
 	private void initializePresentationClient()
 	{
@@ -110,7 +111,7 @@ public class ImageGallery extends Activity {
 			}
 			
 			@Override
-			protected List<String> ExecuteTask()
+			protected List<String> executeTask()
 			{				
 				List<String> imageNames = client.getCurrentPresentationImageNames();
 				List<String> filesPath = new ArrayList<String>();

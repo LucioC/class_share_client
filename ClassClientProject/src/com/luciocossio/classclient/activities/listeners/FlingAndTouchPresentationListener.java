@@ -2,29 +2,43 @@ package com.luciocossio.classclient.activities.listeners;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.activities.PresentationAsyncTask;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.gestures.FlingDirectionIdentifier;
 import com.luciocossio.gestures.Gestures;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-public class FlingPresentationListener extends GestureDetector.SimpleOnGestureListener {
+public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnGestureListener {
 	
 	FlingDirectionIdentifier directionIdentifier;
 	PresentationClient client;
 	ProgressDialog dialog;
+	Activity activity;
 	
+	boolean presentationStarted = false;
 	boolean callServer = true;
-	
-	public FlingPresentationListener(PresentationClient client, ProgressDialog dialog)
+
+	public FlingAndTouchPresentationListener(PresentationClient client, ProgressDialog dialog, Activity activity)
 	{
 		super();		
 		directionIdentifier = new FlingDirectionIdentifier();
 		this.client = client;
 		this.dialog = dialog;
-	}	
+		this.activity = activity;
+	}		
+
+	@Override
+	public boolean onSingleTapConfirmed(MotionEvent e) {
+		if(presentationStarted)
+		{
+			activity.openOptionsMenu();
+		}
+		return super.onSingleTapConfirmed(e);
+	}
 
     @Override
     public boolean onFling(MotionEvent event1, MotionEvent event2, 
@@ -34,14 +48,18 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
     	float movementDistance = directionIdentifier.totalDistance(event1, event2);
     	
     	if(movementDistance < 250) return true;
-    	
+
     	if(callServer)
     	{
     		if(side == Gestures.FLING_UP)
     		{
     			startPresentation(client, dialog);    		
     		}
-    		else if(side == Gestures.FLING_DOWN)
+    	}
+    	
+    	if(presentationStarted)
+    	{
+    		if(side == Gestures.FLING_DOWN)
     		{
     			closePresentation(client, dialog);
     		}
@@ -55,8 +73,8 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
     	PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
-			{
+			protected ResultMessage executeTask()
+			{				
 				return client.startPresentation();
 			}
 			
@@ -65,6 +83,7 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
 			{
 				if(result.getWasSuccessful())
 				{
+					presentationStarted = true;
 					started();
 				}
 			}
@@ -77,7 +96,7 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.closePresentation();
 			}
@@ -104,9 +123,13 @@ public class FlingPresentationListener extends GestureDetector.SimpleOnGestureLi
     	
     }
 	
-	public void setCallServer(boolean callServer)
+	public void setPresentationStarted(boolean presentationStarted)
 	{
-		this.callServer = callServer;		
+		this.presentationStarted = presentationStarted;		
+	}
+	
+	public void setCallServer(boolean callServer) {
+		this.callServer = callServer;
 	}
 
 }

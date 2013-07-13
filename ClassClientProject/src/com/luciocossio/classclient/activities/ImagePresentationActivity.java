@@ -6,6 +6,7 @@ import com.luciocossio.classclient.R;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 
@@ -73,7 +74,7 @@ public class ImagePresentationActivity extends Activity {
 
 	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
 	    			@Override
-	    			protected ResultMessage ExecuteTask()
+	    			protected ResultMessage executeTask()
 	    			{
 	    				return client.uploadFile(file, file.getName());
 	    			}
@@ -99,7 +100,7 @@ public class ImagePresentationActivity extends Activity {
 		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.openImage(lastFilename);
 				//return null;
@@ -125,7 +126,7 @@ public class ImagePresentationActivity extends Activity {
 		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return new ResultMessage("", true);
 				//return client.openImage(lastFilename);

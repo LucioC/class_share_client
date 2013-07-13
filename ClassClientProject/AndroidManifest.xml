@@ -72,6 +72,11 @@
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
+            android:name="com.luciocossio.classclient.activities.image.PresentationImagesActivity"
+            android:label="@string/title_activity_control_image_presentation"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
+        </activity>
+        <activity
             android:name="com.luciocossio.classclient.activities.ControlImagePresentationActivityGesture"
             android:label="@string/title_activity_control_image_presentation"
         	android:screenOrientation="portrait" >

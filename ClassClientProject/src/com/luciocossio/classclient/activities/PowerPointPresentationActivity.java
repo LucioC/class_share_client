@@ -9,6 +9,9 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.image.ImageGallery;
+import com.luciocossio.classclient.activities.image.PresentationImagesActivity;
+import com.luciocossio.classclient.async.AsyncTaskList;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 import com.luciocossio.classserviceclient.util.SystemUiHider;
@@ -82,7 +85,7 @@ public class PowerPointPresentationActivity extends Activity implements OnItemCl
 			}
 			
 			@Override
-			protected List<String> ExecuteTask()
+			protected List<String> executeTask()
 			{
 				List<String> files = client.getPresentationFileNames();
 				return files;
@@ -121,7 +124,7 @@ public class PowerPointPresentationActivity extends Activity implements OnItemCl
 				final PowerPointPresentationActivity thisActivity = this;
 	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
 	    			@Override
-	    			protected ResultMessage ExecuteTask()
+	    			protected ResultMessage executeTask()
 	    			{
 	    				return client.uploadFile(file, file.getName());
 	    			}
@@ -148,7 +151,7 @@ public class PowerPointPresentationActivity extends Activity implements OnItemCl
 		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
 		{
 			@Override
-			protected ResultMessage ExecuteTask()
+			protected ResultMessage executeTask()
 			{
 				return client.preparePresentation(lastFilename);
 			}			
@@ -158,7 +161,7 @@ public class PowerPointPresentationActivity extends Activity implements OnItemCl
 			{
 				if(result.getWasSuccessful())
 				{
-					Intent intent = new Intent(thisPanel, ImageGallery.class);	
+					Intent intent = new Intent(thisPanel, PresentationImagesActivity.class);	
 					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
 					startActivity(intent);
 				}

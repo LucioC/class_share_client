@@ -1,4 +1,4 @@
-package com.luciocossio.classclient.activities;
+package com.luciocossio.classclient.async;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class AsyncTaskList extends AsyncTask<String, Void, List<String>> {
 	}
 	
 	//Should override this for specific task execution
-	protected List<String> ExecuteTask()
+	protected List<String> executeTask()
 	{
 		return null;
 	}
@@ -50,7 +50,7 @@ public class AsyncTaskList extends AsyncTask<String, Void, List<String>> {
 	@Override
 	protected List<String> doInBackground(String... params) {
 				
-		result = ExecuteTask();
+		result = executeTask();
 		return result;
 	}
 	

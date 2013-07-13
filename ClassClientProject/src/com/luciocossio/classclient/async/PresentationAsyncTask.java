@@ -1,4 +1,4 @@
-package com.luciocossio.classclient.activities;
+package com.luciocossio.classclient.async;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -40,7 +40,7 @@ public class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage
 	}
 	
 	//Should override this for specific task execution
-	protected ResultMessage ExecuteTask()
+	protected ResultMessage executeTask()
 	{
 		return null;
 	}
@@ -48,7 +48,7 @@ public class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage
 	@Override
 	protected ResultMessage doInBackground(String... params) {
 				
-		result = ExecuteTask();
+		result = executeTask();
 		return result;
 	}
 	
