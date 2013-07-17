@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 /**
  * @author Artyom Kiriliyk
+ * reference: https://github.com/radioelectronic/pinchzoom-gallery
  * -------------------
  * Extends Android ImageView to include pinch zooming and panning.
  */
