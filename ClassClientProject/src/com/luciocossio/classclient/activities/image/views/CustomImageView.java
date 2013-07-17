@@ -1,4 +1,4 @@
-package com.luciocossio.classclient.activities.image;
+package com.luciocossio.classclient.activities.image.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,35 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ImagePresentation"
-    android:background="#0099cc"
-    android:padding="30dp"
-    android:orientation="vertical" >
-    
-            <Button
-                android:id="@+id/send"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/send_button"
-                android:onClick="sendFile"  
-                android:layout_weight="1" />
-
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/image_open_button"
-                android:onClick="openImage"
-                android:layout_weight="1" />      
-                            
-            <Button
-                android:id="@+id/start2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Start with Gestures"
-                android:onClick="openImage2"
-                android:layout_weight="1" />      
-            
-
-</LinearLayout>
+<com.luciocossio.classclient.activities.image.views.TouchImageView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/current_image"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" />

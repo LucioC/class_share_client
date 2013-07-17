@@ -19,6 +19,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 	private final String PRESENTATION_SLIDES_PATH = "presentation/slides";
 	private final String IMAGE_COMMAND = "image/action";
 	private final String OPEN_IMAGE_PATH = "image";
+	private final String GET_IMAGE_PATH = "image";
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
 	private final String GOTOSLIDE_PATH = "presentation/action";
@@ -91,9 +92,16 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		return stream;
 	}	
 	
-	public InputStream getImage(String imageName) throws ClientProtocolException, IOException
+	public InputStream getSlideImage(String imageName) throws ClientProtocolException, IOException
 	{
 		String url = serverUrl + PRESENTATION_SLIDES_PATH + "/" + imageName;
+		InputStream stream = doGetFile(url);
+		return stream;
+	}
+	
+	public InputStream getCurrentImage() throws ClientProtocolException, IOException
+	{
+		String url = serverUrl + GET_IMAGE_PATH;
 		InputStream stream = doGetFile(url);
 		return stream;
 	}

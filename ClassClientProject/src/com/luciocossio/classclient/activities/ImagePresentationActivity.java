@@ -1,59 +1,74 @@
 package com.luciocossio.classclient.activities;
 
 import java.io.File;
+import java.util.List;
+
 import com.luciocossio.classclient.R;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
-import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.activities.image.PresentationImageActivity;
+import com.luciocossio.classclient.activities.image.PresentationSlidesActivity;
+import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
-import com.luciocossio.classclient.http.RESTApacheClient;
-import com.luciocossio.classclient.http.RESTJsonClient;
 
 import android.net.Uri;
-import android.os.Bundle;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class ImagePresentationActivity extends Activity {
-
-	private ProgressDialog dialog;
-	private PresentationClient presentationClient;
-	private String serverUrl;
-	private String lastFilename;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-		setContentView(R.layout.activity_image_presentation);
-
-		Intent intent = getIntent();		
-		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);
-		
-		lastFilename = "android.jpg";
-		
-		initializePresentationClient();		
-
-		dialog = new ProgressDialog(this);
-	}	
+public class ImagePresentationActivity extends PresentationListActivity implements OnItemClickListener {
 	
-	private void initializePresentationClient()
-	{
-		RESTJsonClient jsonClient = new RESTApacheClient();
-		presentationClient = new PresentationClient(jsonClient, serverUrl);
+	static final int REQUEST_CODE = 1234;
+	static final String CHOOSER_TITLE = "Select a file";
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    switch (requestCode) {
+	    case REQUEST_CODE:  
+	        if (resultCode == RESULT_OK) {  
+	            // The URI of the selected file 
+	            final Uri uri = data.getData();
+				final File file = FileUtils.getFile(uri);
+				final ImagePresentationActivity thisActivity = this;
+	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
+	    			@Override
+	    			protected ResultMessage executeTask()
+	    			{
+	    				return client.uploadFile(file, file.getName());
+	    			}
+	    			
+	    			@Override
+	    			protected void onEndPostExecute(ResultMessage result)
+	    			{
+	    				if(result.getWasSuccessful())
+	    				{
+		    				lastFilename = file.getName();	   
+		    				thisActivity.updateList();
+	    				}
+	    			}
+	    		};
+	    		
+	    		task.execute();	    		
+	        }
+	    }
+	}
+	
+	protected void setContentView() {
+		setContentView(R.layout.activity_image_list);
 	}	
 
-	private static final int REQUEST_CODE = 1234;
-	private static final String CHOOSER_TITLE = "Select a file";
-	public void sendFile(View view)
-	{		
+	protected void setListListener() {
+		ListView listView = (ListView)findViewById(R.id.image_list);
+		listView.setOnItemClickListener(this);
+	}
+	
+	public void sendFile(View view) {		
 		 Intent target = FileUtils.createGetContentIntent();
 		 Intent intent = Intent.createChooser(target, CHOOSER_TITLE);
 		    try {
@@ -63,38 +78,7 @@ public class ImagePresentationActivity extends Activity {
 		    }
 	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    switch (requestCode) {
-	    case REQUEST_CODE:  
-	        if (resultCode == RESULT_OK) {
-	            // The URI of the selected file 
-	            final Uri uri = data.getData();
-				final File file = FileUtils.getFile(uri);
-
-	    		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog) {
-	    			@Override
-	    			protected ResultMessage executeTask()
-	    			{
-	    				return client.uploadFile(file, file.getName());
-	    			}
-
-	    			@Override
-	    			protected void OnEndPostExecute(ResultMessage result)
-	    			{
-	    				if(result.getWasSuccessful())
-	    				{
-		    				lastFilename = file.getName();					
-	    				}
-	    			}
-	    		};
-	    		
-	    		task.execute();
-	        }
-	    }
-	}
-	
-	public void openImage(View view)
+	public void startImagePresentation(View view)
 	{
 		final Activity thisPanel = this;
 		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
@@ -103,15 +87,14 @@ public class ImagePresentationActivity extends Activity {
 			protected ResultMessage executeTask()
 			{
 				return client.openImage(lastFilename);
-				//return null;
 			}
 			
 			@Override
-			protected void OnEndPostExecute(ResultMessage result)
+			protected void onEndPostExecute(ResultMessage result)
 			{
 				if(result.getWasSuccessful())
 				{
-					Intent intent = new Intent(thisPanel, ControlImagePresentationActivity.class);	
+					Intent intent = new Intent(thisPanel, PresentationImageActivity.class);	
 					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
 					startActivity(intent);
 				}
@@ -120,30 +103,39 @@ public class ImagePresentationActivity extends Activity {
 		task.execute();
 	}
 
-	public void openImage2(View view)
-	{
-		final Activity thisPanel = this;
-		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
-		{
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		ListView list = (ListView) findViewById(R.id.image_list);
+		String selectedFromList = (String) (list.getItemAtPosition(arg2));
+		lastFilename = selectedFromList;
+		startImagePresentation(null);
+	}
+	
+	public void updateList() {		
+		final ListView list = (ListView) findViewById(R.id.image_list);
+		final Context context = this;
+		
+		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog, "Carregando lista de arquivos...")
+		{			
 			@Override
-			protected ResultMessage executeTask()
-			{
-				return new ResultMessage("", true);
-				//return client.openImage(lastFilename);
-				//return null;
+			protected void onPostExecute(List<String> files)
+			{	
+				super.onPostExecute(files);
+				
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, 
+			            android.R.layout.simple_list_item_1);
+				adapter.addAll(files);
+				list.setAdapter(adapter);
 			}
 			
 			@Override
-			protected void OnEndPostExecute(ResultMessage result)
+			protected List<String> executeTask()
 			{
-				if(result.getWasSuccessful())
-				{
-					Intent intent = new Intent(thisPanel, ControlImagePresentationActivityGesture.class);	
-					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
-					startActivity(intent);
-				}
-			}
+				List<String> files = client.getImageFileNames();
+				return files;
+			}			
 		};
 		task.execute();
 	}
+	
 }

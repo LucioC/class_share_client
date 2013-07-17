@@ -99,7 +99,7 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
 			}
 			
 			@Override
-			protected void OnEndPostExecute(ResultMessage result)
+			protected void onEndPostExecute(ResultMessage result)
 			{
 				if(result.getWasSuccessful())
 				{
@@ -122,7 +122,7 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
 			}
 			
 			@Override
-			protected void OnEndPostExecute(ResultMessage result)
+			protected void onEndPostExecute(ResultMessage result)
 			{
 				if(result.getWasSuccessful())
 				{

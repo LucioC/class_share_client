@@ -66,11 +66,11 @@ public class PresentationAsyncTask extends AsyncTask<String, Void, ResultMessage
 		{
 			dialog.dismiss();
 		}
-		OnEndPostExecute(result);
+		onEndPostExecute(result);
 	}
 	
 	//Override this to aditional calls
-	protected void OnEndPostExecute(ResultMessage result)
+	protected void onEndPostExecute(ResultMessage result)
 	{
 		
 	}

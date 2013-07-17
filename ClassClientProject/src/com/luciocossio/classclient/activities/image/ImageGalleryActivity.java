@@ -16,11 +16,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -28,15 +25,14 @@ import android.widget.ImageView;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
-import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.CommonVariables;
+import com.luciocossio.classclient.activities.image.views.PresentationImageView;
 import com.luciocossio.classclient.activities.listeners.FlingAndTouchPresentationListener;
 import com.luciocossio.classclient.async.AsyncTaskList;
-import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 
-public class ImageGallery extends Activity {
+public class ImageGalleryActivity extends Activity {
 
 	protected PresentationClient client;	
 	protected ProgressDialog dialog;
@@ -92,7 +88,7 @@ public class ImageGallery extends Activity {
 		client = new PresentationClient(jsonClient, serverUrl);
 	}	
 	
-	public void setImageUrl(List<String> imageUrls)
+	public void setImagesUrl(List<String> imageUrls)
 	{
 		adapter.setImages(imageUrls);
 		adapter.notifyDataSetChanged();
@@ -100,7 +96,7 @@ public class ImageGallery extends Activity {
 	
 	public void getImages()
 	{
-		final ImageGallery gallery = this;
+		final ImageGalleryActivity gallery = this;
 		AsyncTaskList task = new AsyncTaskList(client, dialog, "Carregando slides da apresentação...")
 		{
 			
@@ -108,7 +104,7 @@ public class ImageGallery extends Activity {
 			protected void onPostExecute(List<String> images)
 			{	
 				super.onPostExecute(images);
-				gallery.setImageUrl(images);
+				gallery.setImagesUrl(images);
 			}
 			
 			@Override
@@ -121,7 +117,7 @@ public class ImageGallery extends Activity {
 				{
 					InputStream stream = null;
 					try {
-						stream = client.getImage(imageName);
+						stream = client.getSlideImage(imageName);
 					} catch (ClientProtocolException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -187,7 +183,7 @@ public class ImageGallery extends Activity {
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {		
-			Context context = ImageGallery.this;
+			Context context = ImageGalleryActivity.this;
 			PresentationImageView imageView = new PresentationImageView(context, flingListener);
 			int padding = context.getResources().getDimensionPixelSize(
 					R.dimen.padding_medium);

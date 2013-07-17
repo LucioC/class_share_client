@@ -67,12 +67,17 @@
         	android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.luciocossio.classclient.activities.image.ImageGallery"
+            android:name="com.luciocossio.classclient.activities.image.ImageGalleryActivity"
             android:label="@string/title_activity_control_image_presentation"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
-            android:name="com.luciocossio.classclient.activities.image.PresentationImagesActivity"
+            android:name="com.luciocossio.classclient.activities.image.PresentationSlidesActivity"
+            android:label="@string/title_activity_control_image_presentation"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
+        </activity>
+        <activity
+            android:name="com.luciocossio.classclient.activities.image.PresentationImageActivity"
             android:label="@string/title_activity_control_image_presentation"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>

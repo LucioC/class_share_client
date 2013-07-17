@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class PresentationImagesActivity extends ImageGallery {
+public class PresentationSlidesActivity extends ImageGalleryActivity {
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,8 @@ public class PresentationImagesActivity extends ImageGallery {
 			}
 			
 			@Override
-			protected void OnEndPostExecute(ResultMessage result) {
-				super.OnEndPostExecute(result);
+			protected void onEndPostExecute(ResultMessage result) {
+				super.onEndPostExecute(result);
 				activity.finish();
 			}
 		};

@@ -1,4 +1,4 @@
-package com.luciocossio.classclient.activities.image;
+package com.luciocossio.classclient.activities.image.views;
 
 import com.luciocossio.classclient.activities.listeners.FlingAndTouchPresentationListener;
 
