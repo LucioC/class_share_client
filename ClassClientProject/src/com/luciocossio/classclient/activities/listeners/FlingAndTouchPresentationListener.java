@@ -8,6 +8,7 @@ import com.luciocossio.gestures.Gestures;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,18 +19,36 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
 	PresentationClient client;
 	ProgressDialog dialog;
 	Activity activity;
+	ViewPager viewPager;
 	
+	protected int scrollBoundary = 200;
 	boolean presentationStarted = false;
 	boolean callServer = true;
 
-	public FlingAndTouchPresentationListener(PresentationClient client, ProgressDialog dialog, Activity activity)
+	public FlingAndTouchPresentationListener(PresentationClient client, ProgressDialog dialog, Activity activity, ViewPager viewPager)
 	{
 		super();		
 		directionIdentifier = new FlingDirectionIdentifier();
 		this.client = client;
 		this.dialog = dialog;
 		this.activity = activity;
-	}		
+		this.viewPager = viewPager;
+	}	
+	
+	protected float lastLocalDistanceY=0;
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		
+		float localDistanceY = e1.getY() - e2.getY();		
+		float dy = localDistanceY - lastLocalDistanceY;
+		
+		if(Math.abs(dy) > 10 && Math.abs(viewPager.getScrollY()+dy) < scrollBoundary)
+		{
+			this.viewPager.scrollTo(this.viewPager.getScrollX(), (int)(this.viewPager.getScrollY()+dy) );
+		}
+		
+		return true;
+	}
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -39,7 +58,7 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
 		}
 		return super.onSingleTapConfirmed(e);
 	}
-
+	
     @Override
     public boolean onFling(MotionEvent event1, MotionEvent event2, 
             float velocityX, float velocityY) {
@@ -47,8 +66,9 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
     	String side = directionIdentifier.onFlingReturnDirection(event1, event2);
     	float movementDistance = directionIdentifier.totalDistance(event1, event2);
     	
-    	if(movementDistance < 250) return true;
-
+    	resetScrollHeight();
+    	if( movementDistance < scrollBoundary - scrollBoundary/4) return true;
+    	
     	if(callServer)
     	{
     		if(side == Gestures.FLING_UP)
@@ -121,6 +141,17 @@ public class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnG
     public void closed()
     {
     	
+    }
+    
+    protected void resetScrollHeight()
+    {
+    	this.viewPager.scrollTo(this.viewPager.getScrollX(), 0 );
+    	lastLocalDistanceY = 0;    
+    }
+    
+    public void onFingerUp()
+    {	
+    	resetScrollHeight();
     }
 	
 	public void setPresentationStarted(boolean presentationStarted)

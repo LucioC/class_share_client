@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -67,7 +68,7 @@ public class ImageGallery extends Activity {
 		viewPager.setOnPageChangeListener(pageListener);
 
 		final Activity thisPanel = this;
-		flingListener = new FlingAndTouchPresentationListener(client, dialog, this)
+		flingListener = new FlingAndTouchPresentationListener(client, dialog, this, viewPager)
 		{
 			@Override
 			public void closed()
@@ -84,7 +85,7 @@ public class ImageGallery extends Activity {
 
 		this.getImages();
 	}
-
+	
 	private void initializePresentationClient()
 	{
 		RESTJsonClient jsonClient = new RESTApacheClient();
