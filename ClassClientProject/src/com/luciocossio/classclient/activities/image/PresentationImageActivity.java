@@ -17,6 +17,7 @@ import com.luciocossio.classclient.async.AsyncTaskList;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
 
 public class PresentationImageActivity extends BaseClientActivity {
@@ -47,18 +48,21 @@ public class PresentationImageActivity extends BaseClientActivity {
 				super.onPostExecute(images);
 				
 				File file = new File(getFilesDir(), "image");
-				InputStream inputStream = null;
-				try {
-					inputStream = new FileInputStream(file);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
 				
+				String filePath = file.getAbsolutePath();
 				TouchImageView imageView = activity.getImageView();
 				
-				Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+				Options options = new BitmapFactory.Options();
+				options.inJustDecodeBounds = true;
+			    BitmapFactory.decodeFile(filePath, options);
+			    
+			    options.inSampleSize = calculateInSampleSize(options, 1024, 768);
+
+			    options.inJustDecodeBounds = false;			    
+				Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+				
 				imageView.setImageBitmap(bitmap);
-				imageView.setMaxZoom(4f);			
+				imageView.setMaxZoom(6f);		
 				
 				//imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 				//imageView.setImageURI(Uri.parse(images.get(0)));
@@ -105,6 +109,28 @@ public class PresentationImageActivity extends BaseClientActivity {
 		};
 		task.execute();
 	}
+	
+	public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    // Raw height and width of image
+    final int height = options.outHeight;
+    final int width = options.outWidth;
+    int inSampleSize = 1;
+
+    if (height > reqHeight || width > reqWidth) {
+
+        // Calculate ratios of height and width to requested height and width
+        final int heightRatio = Math.round((float) height / (float) reqHeight);
+        final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+        // Choose the smallest ratio as inSampleSize value, this will guarantee
+        // a final image with both dimensions larger than or equal to the
+        // requested height and width.
+        inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+    }
+
+    return inSampleSize;
+}
 		
 
 }
