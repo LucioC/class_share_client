@@ -30,7 +30,7 @@ public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 	}
 	
 	@Override
-	public void updateVisiblePart(int left, int top, int right, int bottom) {
+	public void updateVisiblePart(int left, int top, int right, int bottom, int imageHeight, int imageWidth) {
 		dleft = left - this.left;
 		dright = right - this.right;
 		dtop = top - this.top;
@@ -49,12 +49,14 @@ public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 			final Integer newRight = (int)right;
 			final Integer newTop = (int)top;
 			final Integer newBottom = (int)bottom;
+			final Integer sourceHeight = imageHeight;
+			final Integer sourceWidth = imageWidth;
 			
 			lastTime = System.currentTimeMillis();
 			AsyncSilentTask task = new AsyncSilentTask(client)
 			{
 				protected com.luciocossio.classclient.ResultMessage executeTask() {
-					return this.client.updateImageVisiblePart(newLeft, newTop, newRight, newBottom);
+					return this.client.updateImageVisiblePart(newLeft, newTop, newRight, newBottom, sourceHeight, sourceWidth);
 				}
 			};
 			task.execute();

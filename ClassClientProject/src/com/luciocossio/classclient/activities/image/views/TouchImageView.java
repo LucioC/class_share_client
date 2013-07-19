@@ -195,10 +195,13 @@ public class TouchImageView extends ImageView
 		if(bottom > bmHeight) bottom = bmHeight;
 
 		left = (left!=0) ? left/scale : 0;
-		top = (top!=0) ? top/scale : 0;	
+		top = (top!=0) ? top/scale : 0;
+		
 		Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
+		Log.i("ZOOM", scale + "");
+		Log.i("IMAGE", this.getDrawable().getBounds().width() + ":" + this.getDrawable().getBounds().height());
 
-		listener.updateVisiblePart((int)Math.abs(left), (int)Math.abs(top), (int)Math.abs(right), (int)Math.abs(bottom));
+		listener.updateVisiblePart((int)Math.abs(left), (int)Math.abs(top), (int)Math.abs(right), (int)Math.abs(bottom), this.getDrawable().getBounds().height(), this.getDrawable().getBounds().width());
 	}
 
 	private class ScaleListener extends
