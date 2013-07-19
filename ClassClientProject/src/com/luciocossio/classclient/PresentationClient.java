@@ -127,6 +127,34 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		return doPut(url,"{\"command\":\"rotateright\"}");
 	}
 	
+	public ResultMessage moveImage(int dx, int dy)
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"move\", \"param\":\""+ dx + ":" + dy + "\"}");
+	}
+	
+	public ResultMessage zoomImage(float zoom, int x, int y)
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"zoom\", \"param\":\""+ zoom + ":" + x + ":" + y + "\"}");
+	}
+	
+	public ResultMessage updateImageVisiblePart(int left, int top, int right, int bottom)
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"visiblepart\", \"param\":\""+ left + ":" + top + ":" + right + ":" + bottom + "\"}");
+	}
+	
+	public ResultMessage zoomImage(float zoom)
+	{
+		String url = serverUrl + IMAGE_COMMAND;
+		
+		return doPut(url,"{\"command\":\"zoom\", \"param\":\""+ zoom + "\"}");
+	}
+	
 	public ResultMessage rotateImageLeft()
 	{
 		String url = serverUrl + IMAGE_COMMAND;

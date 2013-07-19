@@ -19,15 +19,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
+import android.view.WindowManager;
 
 public class PresentationImageActivity extends BaseClientActivity {
 
 	protected String serverUrl;
+	ImageMoveZoomPanConnector listener = null;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_image_presentation);
+		
+		listener = new ImageMoveZoomPanConnector(this.presentationClient, 20, 150);
+		TouchImageView imageView = getImageView();
+		imageView.setListener(listener);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		this.getImage();
 	}
 	
@@ -40,6 +48,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 	public void getImage()
 	{
 		final PresentationImageActivity activity = this;
+		final ImageMoveZoomPanConnector imageConnector = listener;
 		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog, "Carregando imagem...")
 		{			
 			@Override
@@ -53,19 +62,17 @@ public class PresentationImageActivity extends BaseClientActivity {
 				TouchImageView imageView = activity.getImageView();
 				
 				Options options = new BitmapFactory.Options();
+				
 				options.inJustDecodeBounds = true;
 			    BitmapFactory.decodeFile(filePath, options);
 			    
 			    options.inSampleSize = calculateInSampleSize(options, 1024, 768);
-
-			    options.inJustDecodeBounds = false;			    
+			    
+			    options.inJustDecodeBounds = false;
 				Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 				
 				imageView.setImageBitmap(bitmap);
-				imageView.setMaxZoom(6f);		
-				
-				//imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-				//imageView.setImageURI(Uri.parse(images.get(0)));
+				imageView.setMaxZoom(15f);
 			}
 
 			@Override
@@ -126,7 +133,7 @@ public class PresentationImageActivity extends BaseClientActivity {
         // Choose the smallest ratio as inSampleSize value, this will guarantee
         // a final image with both dimensions larger than or equal to the
         // requested height and width.
-        inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        inSampleSize = heightRatio > widthRatio ? heightRatio : widthRatio;
     }
 
     return inSampleSize;

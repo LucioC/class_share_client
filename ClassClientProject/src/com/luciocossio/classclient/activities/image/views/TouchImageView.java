@@ -1,10 +1,14 @@
 package com.luciocossio.classclient.activities.image.views;
 
+import com.luciocossio.classclient.activities.image.ImageMoveZoomPanListener;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -12,7 +16,7 @@ import android.widget.ImageView;
 
 /**
  * @author Artyom Kiriliyk
- * reference: https://github.com/radioelectronic/pinchzoom-gallery
+ * adapted from : https://github.com/radioelectronic/pinchzoom-gallery
  * -------------------
  * Extends Android ImageView to include pinch zooming and panning.
  */
@@ -43,7 +47,10 @@ public class TouchImageView extends ImageView
 	ScaleGestureDetector mScaleDetector;
 
 	Context context;
-
+	
+	ScaleListener scaleListener = null;
+	ImageMoveZoomPanListener listener = null;
+	
 	public TouchImageView(Context context)
 	{
 		super(context);
@@ -57,15 +64,18 @@ public class TouchImageView extends ImageView
 	}
 
 	private void sharedConstructing(Context context)
-	{
+	{		
 		super.setClickable(true);
 		this.context = context;
-		mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+		scaleListener = new ScaleListener();
+		scaleListener.setImageListener(listener);
+		mScaleDetector = new ScaleGestureDetector(context, scaleListener);
 		matrix.setTranslate(1f, 1f);
 		m = new float[9];
 		setImageMatrix(matrix);
 		setScaleType(ScaleType.MATRIX);
 
+		final TouchImageView imageView = this;
 		setOnTouchListener(new OnTouchListener()
 		{
 			@Override
@@ -77,7 +87,7 @@ public class TouchImageView extends ImageView
 				float x = m[Matrix.MTRANS_X];
 				float y = m[Matrix.MTRANS_Y];
 				PointF curr = new PointF(event.getX(), event.getY());
-
+				
 				switch (event.getAction())
 				{
 					case MotionEvent.ACTION_DOWN:
@@ -120,7 +130,11 @@ public class TouchImageView extends ImageView
 								else if (y + deltaY < -bottom)
 									deltaY = -(y + bottom);
 							}
-							matrix.postTranslate(deltaX, deltaY);
+							
+							matrix.postTranslate(deltaX, deltaY);							
+							
+							updateVisiblePartDimensions();	
+							
 							last.set(curr.x, curr.y);
 						}
 						break;
@@ -137,11 +151,18 @@ public class TouchImageView extends ImageView
 						mode = NONE;
 						break;
 				}
-				setImageMatrix(matrix);
+				setImageMatrix(matrix);							
+				
 				invalidate();
 				return true; // indicate event was handled
-			}
+			}			
 		});
+	}
+	
+	public void setListener(ImageMoveZoomPanListener newListener)
+	{
+		this.listener = newListener;		
+		scaleListener.setImageListener(listener);
 	}
 
 	@Override
@@ -159,10 +180,37 @@ public class TouchImageView extends ImageView
 	{
 		maxScale = x;
 	}
+	
+	protected void updateVisiblePartDimensions() {
+		//get real view that is being showed on screen
+		matrix.getValues(m);
+		float left = m[Matrix.MTRANS_X];
+		float top = m[Matrix.MTRANS_Y];
+		if(top > 0) top = 0;
+		float scale = m[Matrix.MSCALE_X];
+		float right = -left + getWidth();
+		right = (right!=0) ? right/scale : 0;
+		float bottom = -top + getHeight();
+		bottom = (bottom!=0) ? bottom/scale : 0;	
+		if(bottom > bmHeight) bottom = bmHeight;
+
+		left = (left!=0) ? left/scale : 0;
+		top = (top!=0) ? top/scale : 0;	
+		Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
+
+		listener.updateVisiblePart((int)Math.abs(left), (int)Math.abs(top), (int)Math.abs(right), (int)Math.abs(bottom));
+	}
 
 	private class ScaleListener extends
 		ScaleGestureDetector.SimpleOnScaleGestureListener
 	{
+		ImageMoveZoomPanListener listener;
+		
+		public void setImageListener(ImageMoveZoomPanListener listener)
+		{
+			this.listener = listener;
+		}
+		
 		@Override
 		public boolean onScaleBegin(ScaleGestureDetector detector)
 		{
@@ -193,6 +241,7 @@ public class TouchImageView extends ImageView
 			if (origWidth * saveScale <= width || origHeight * saveScale <= height)
 			{
 				matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
+
 				if (mScaleFactor < 1)
 				{
 					matrix.getValues(m);
@@ -203,24 +252,33 @@ public class TouchImageView extends ImageView
 						if (Math.round(origWidth * saveScale) < width)
 						{
 							if (y < -bottom)
+							{
 								matrix.postTranslate(0, -(y + bottom));
+							}
 							else if (y > 0)
+							{
 								matrix.postTranslate(0, -y);
+							}
 						}
 						else
 						{
 							if (x < -right)
+							{
 								matrix.postTranslate(-(x + right), 0);
+							}
 							else if (x > 0)
+							{
 								matrix.postTranslate(-x, 0);
+							}
 						}
 					}
 				}
 			}
 			else
 			{
-				matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(),
-					detector.getFocusY());
+				matrix.postScale(mScaleFactor, mScaleFactor, (int)detector.getFocusX(),
+					(int)detector.getFocusY());
+				
 				matrix.getValues(m);
 				float x = m[Matrix.MTRANS_X];
 				float y = m[Matrix.MTRANS_Y];
@@ -236,6 +294,7 @@ public class TouchImageView extends ImageView
 						matrix.postTranslate(0, -y);
 				}
 			}
+			updateVisiblePartDimensions();
 			return true;
 		}
 	}
