@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -43,7 +44,7 @@ public class TouchImageView extends ImageView
 	static final int CLICK = 3;
 	float saveScale = 1f;
 	float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
-
+	
 	ScaleGestureDetector mScaleDetector;
 
 	Context context;
@@ -73,19 +74,24 @@ public class TouchImageView extends ImageView
 		matrix.setTranslate(1f, 1f);
 		m = new float[9];
 		setImageMatrix(matrix);
-		setScaleType(ScaleType.MATRIX);
-
-		final TouchImageView imageView = this;
+		setScaleType(ScaleType.MATRIX);		
+		registerListener(null);
+	}
+	
+	public void registerListener(GestureDetectorCompat newDetector)
+	{
+		final GestureDetectorCompat newRegisteredDetector = newDetector;
 		setOnTouchListener(new OnTouchListener()
 		{
 			@Override
 			public boolean onTouch(View v, MotionEvent event)
 			{
 				mScaleDetector.onTouchEvent(event);
+				
+				if(newRegisteredDetector != null)
+					newRegisteredDetector.onTouchEvent(event);
 
 				matrix.getValues(m);
-				float x = m[Matrix.MTRANS_X];
-				float y = m[Matrix.MTRANS_Y];
 				PointF curr = new PointF(event.getX(), event.getY());
 				
 				switch (event.getAction())
@@ -98,44 +104,7 @@ public class TouchImageView extends ImageView
 					case MotionEvent.ACTION_MOVE:
 						if (mode == DRAG)
 						{
-							float deltaX = curr.x - last.x;
-							float deltaY = curr.y - last.y;
-							float scaleWidth = Math.round(origWidth * saveScale);
-							float scaleHeight = Math.round(origHeight * saveScale);
-							if (scaleWidth < width)
-							{
-								deltaX = 0;
-								if (y + deltaY > 0)
-									deltaY = -y;
-								else if (y + deltaY < -bottom)
-									deltaY = -(y + bottom);
-							}
-							else if (scaleHeight < height)
-							{
-								deltaY = 0;
-								if (x + deltaX > 0)
-									deltaX = -x;
-								else if (x + deltaX < -right)
-									deltaX = -(x + right);
-							}
-							else
-							{
-								if (x + deltaX > 0)
-									deltaX = -x;
-								else if (x + deltaX < -right)
-									deltaX = -(x + right);
-
-								if (y + deltaY > 0)
-									deltaY = -y;
-								else if (y + deltaY < -bottom)
-									deltaY = -(y + bottom);
-							}
-							
-							matrix.postTranslate(deltaX, deltaY);							
-							
-							updateVisiblePartDimensions();	
-							
-							last.set(curr.x, curr.y);
+							updateImagePosition(curr, last, false);
 						}
 						break;
 
@@ -144,7 +113,7 @@ public class TouchImageView extends ImageView
 						int xDiff = (int) Math.abs(curr.x - start.x);
 						int yDiff = (int) Math.abs(curr.y - start.y);
 						if (xDiff < CLICK && yDiff < CLICK)
-							performClick();
+							performClick();						
 						break;
 
 					case MotionEvent.ACTION_POINTER_UP:
@@ -155,9 +124,70 @@ public class TouchImageView extends ImageView
 				
 				invalidate();
 				return true; // indicate event was handled
-			}			
+			}
+			
+			
 		});
 	}
+	
+	public PointF getImagePoint()
+	{
+		matrix.getValues(m);
+		float x = m[Matrix.MTRANS_X];
+		float y = m[Matrix.MTRANS_Y];
+		return new PointF(x,y);
+	}
+
+	public void updateImagePosition(PointF curr, PointF last) {
+		updateImagePosition(curr, last, true);
+	}	
+	
+	public void updateImagePosition(PointF curr, PointF last, boolean verticalMove) {
+		
+		matrix.getValues(m);
+		float x = m[Matrix.MTRANS_X];
+		float y = m[Matrix.MTRANS_Y];
+		float deltaX = curr.x - last.x;
+		float deltaY = curr.y - last.y;
+		float scaleWidth = Math.round(origWidth * saveScale);
+		float scaleHeight = Math.round(origHeight * saveScale);
+		if (scaleWidth < width)
+		{
+			deltaX = 0;
+			if (y + deltaY > 0)
+				deltaY = -y;
+			else if (y + deltaY < -bottom)
+				deltaY = -(y + bottom);
+		}
+		else if (scaleHeight < height)
+		{
+			if(!verticalMove)
+				deltaY = 0;
+			if (x + deltaX > 0)
+				deltaX = -x;
+			else if (x + deltaX < -right)
+				deltaX = -(x + right);
+		}
+		else
+		{
+			if (x + deltaX > 0)
+				deltaX = -x;
+			else if (x + deltaX < -right)
+				deltaX = -(x + right);
+
+			if (y + deltaY > 0)
+				deltaY = -y;
+			else if (y + deltaY < -bottom)
+				deltaY = -(y + bottom);
+		}
+		
+		matrix.postTranslate(deltaX, deltaY);							
+		
+		updateVisiblePartDimensions();	
+		
+		last.set(curr.x, curr.y);
+		setImageMatrix(matrix);
+	}			
 	
 	public void setListener(ImageMoveZoomPanListener newListener)
 	{
@@ -197,10 +227,9 @@ public class TouchImageView extends ImageView
 		left = (left!=0) ? left/scale : 0;
 		top = (top!=0) ? top/scale : 0;
 		
-		Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
-		Log.i("ZOOM", scale + "");
-		Log.i("IMAGE", this.getDrawable().getBounds().width() + ":" + this.getDrawable().getBounds().height());
-
+		//Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
+		//Log.i("ZOOM", scale + "");
+		//Log.i("IMAGE", this.getDrawable().getBounds().width() + ":" + this.getDrawable().getBounds().height());
 		listener.updateVisiblePart((int)Math.abs(left), (int)Math.abs(top), (int)Math.abs(right), (int)Math.abs(bottom), this.getDrawable().getBounds().height(), this.getDrawable().getBounds().width());
 	}
 
@@ -300,6 +329,11 @@ public class TouchImageView extends ImageView
 			updateVisiblePartDimensions();
 			return true;
 		}
+	}
+	
+	public float getImageScale()
+	{
+		return saveScale;		
 	}
 
 	@Override

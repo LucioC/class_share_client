@@ -30,7 +30,7 @@ import com.luciocossio.classclient.activities.image.views.PresentationImageView;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
-import com.luciocossio.classclient.listeners.impl.FlingAndTouchPresentationListener;
+import com.luciocossio.classclient.listeners.impl.FlingTouchPresentationListener;
 import com.luciocossio.classclient.listeners.impl.FlingTouchSlidesListener;
 import com.luciocossio.classclient.listeners.impl.OnPresentationImagePageChangeListener;
 
@@ -42,7 +42,7 @@ public class ImageGalleryActivity extends Activity {
 	
 	ImagePagerAdapter adapter;
 	OnPresentationImagePageChangeListener pageListener;
-	FlingAndTouchPresentationListener flingListener;
+	FlingTouchSlidesListener flingListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -1,19 +1,15 @@
 package com.luciocossio.classclient.listeners.impl;
 
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.gestures.FlingDirectionIdentifier;
 import com.luciocossio.gestures.Gestures;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-public abstract class FlingAndTouchPresentationListener extends GestureDetector.SimpleOnGestureListener {
+public abstract class FlingTouchPresentationListener extends GestureDetector.SimpleOnGestureListener {
 	
 	FlingDirectionIdentifier directionIdentifier;
 	PresentationClient client;
@@ -24,7 +20,7 @@ public abstract class FlingAndTouchPresentationListener extends GestureDetector.
 	boolean presentationStarted = false;
 	boolean callServer = true;
 
-	public FlingAndTouchPresentationListener(PresentationClient client, ProgressDialog dialog, Activity activity)
+	public FlingTouchPresentationListener(PresentationClient client, ProgressDialog dialog, Activity activity)
 	{
 		super();		
 		directionIdentifier = new FlingDirectionIdentifier();
@@ -52,15 +48,15 @@ public abstract class FlingAndTouchPresentationListener extends GestureDetector.
     	resetScrollHeight();
     	if( movementDistance < scrollBoundary - scrollBoundary/4) return true;
     	
-    	if(callServer)
+    	if(callServer && !presentationStarted && canStart())
     	{
     		if(side == Gestures.FLING_UP)
     		{
-    			startPresentation(client, dialog);    		
+    			startPresentation(client, dialog);	
     		}
     	}
     	
-    	if(presentationStarted)
+    	if(presentationStarted && canClose())
     	{
     		if(side == Gestures.FLING_DOWN)
     		{
@@ -74,6 +70,10 @@ public abstract class FlingAndTouchPresentationListener extends GestureDetector.
     public abstract void startPresentation(PresentationClient client, ProgressDialog dialog);
     
     public abstract void closePresentation(PresentationClient client, ProgressDialog dialog);
+    
+    public abstract boolean canClose();
+    
+    public abstract boolean canStart();
     
     public void started()
     {

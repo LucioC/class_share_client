@@ -2,6 +2,7 @@ package com.luciocossio.classclient.listeners.impl;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.PointF;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 
@@ -9,7 +10,7 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
 
-public class FlingTouchSlidesListener extends FlingAndTouchPresentationListener {	
+public class FlingTouchSlidesListener extends FlingTouchPresentationListener {	
 
 	ViewPager viewPager;
 	
@@ -19,19 +20,14 @@ public class FlingTouchSlidesListener extends FlingAndTouchPresentationListener 
 		this.viewPager = viewPager;
 	}	
 	
-	protected float lastLocalDistanceY=0;
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		
-		float localDistanceY = e1.getY() - e2.getY();		
-		float dy = localDistanceY - lastLocalDistanceY;
-		
-		if(Math.abs(dy) > 10 && Math.abs(viewPager.getScrollY()+dy) < scrollBoundary)
+	public void updatePositionY(PointF last, PointF current)
+	{
+		float localDistanceY = last.y - current.y;
+
+		if(Math.abs(viewPager.getScrollY()+localDistanceY) < scrollBoundary)
 		{
-			this.viewPager.scrollTo(this.viewPager.getScrollX(), (int)(this.viewPager.getScrollY()+dy) );
-		}
-		
-		return true;
+			this.viewPager.scrollTo(this.viewPager.getScrollX(), (int)(this.viewPager.getScrollY()+localDistanceY) );
+		}		
 	}
 
 	public void startPresentation(PresentationClient client, ProgressDialog dialog)
@@ -77,12 +73,21 @@ public class FlingTouchSlidesListener extends FlingAndTouchPresentationListener 
 			}
 		};
 		task.execute();
-	}	
+	}
+    
+    public boolean canClose() 
+    {
+    	return true;
+    }
+    
+    public boolean canStart() 
+    {
+    	return true;
+    }
     
     protected void resetScrollHeight()
     {
     	this.viewPager.scrollTo(this.viewPager.getScrollX(), 0 );
-    	lastLocalDistanceY = 0;    
     }
 
 }

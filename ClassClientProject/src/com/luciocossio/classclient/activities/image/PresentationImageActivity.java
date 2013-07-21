@@ -16,6 +16,7 @@ import com.luciocossio.classclient.activities.BaseClientActivity;import com.luci
 import com.luciocossio.classclient.activities.image.views.TouchImageView;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
+import com.luciocossio.classclient.listeners.impl.FlingTouchImageListener;
 import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
 
 import android.app.Activity;
@@ -23,19 +24,26 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.View.OnTouchListener;
 
 public class PresentationImageActivity extends BaseClientActivity {
 
 	protected String serverUrl;
 	ImageMoveZoomPanConnector listener = null;
-	private GestureDetectorCompat simpleGesturesDetector;
+	private GestureDetectorCompat simpleGesturesDetector; 
 	
 	protected String imageName = "";
 	
 	protected boolean hasStarted = false;
+	
+	FlingTouchImageListener flingListener;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +56,59 @@ public class PresentationImageActivity extends BaseClientActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         
 		Intent intent = getIntent();		
-		imageName = intent.getStringExtra(CommonVariables.FileName);
+		imageName = intent.getStringExtra(CommonVariables.FileName);		
+		
+		registerTouchListener();
+		flingListener.setImageName(imageName);
 		
 		this.getImage();
+	}
+
+	protected void registerTouchListener() {
+		final PresentationImageActivity thisPanel = this;
+		flingListener = new FlingTouchImageListener(presentationClient, dialog, this, getImageView())
+		{			
+			@Override
+			public void closed()
+			{
+				thisPanel.finish();
+			}			
+		};		
+		final TouchImageView imageView = getImageView();
+		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener)
+		{
+			PointF last = null; 
+			@Override
+			public boolean onTouchEvent(MotionEvent event) {
+
+				switch (event.getAction())
+				{
+					case MotionEvent.ACTION_DOWN:
+						thisPanel.setYInitialPosition(imageView.getImagePoint().y);
+						last = new PointF(event.getX(), event.getY());
+						break;
+						
+					case MotionEvent.ACTION_UP:
+						flingListener.onFingerUp();
+						break;
+						
+					case MotionEvent.ACTION_MOVE:						
+	                    float curX = event.getX();
+	                    float curY = event.getY();
+	                    PointF current = new PointF(curX, curY);
+	                    flingListener.updatePositionY(last, current);
+	                    last = current;
+						break;
+				}
+				return super.onTouchEvent(event);
+			}
+		};
+		getImageView().registerListener(simpleGesturesDetector);
+	}
+	
+	public void setYInitialPosition(float y)
+	{
+		flingListener.setyInitialPosition(y);
 	}
 	
 	public TouchImageView getImageView()
