@@ -31,6 +31,7 @@ import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
 import com.luciocossio.classclient.listeners.impl.FlingAndTouchPresentationListener;
+import com.luciocossio.classclient.listeners.impl.FlingTouchSlidesListener;
 import com.luciocossio.classclient.listeners.impl.OnPresentationImagePageChangeListener;
 
 public class ImageGalleryActivity extends Activity {
@@ -65,7 +66,7 @@ public class ImageGalleryActivity extends Activity {
 		viewPager.setOnPageChangeListener(pageListener);
 
 		final Activity thisPanel = this;
-		flingListener = new FlingAndTouchPresentationListener(client, dialog, this, viewPager)
+		flingListener = new FlingTouchSlidesListener(client, dialog, this, viewPager)
 		{
 			@Override
 			public void closed()

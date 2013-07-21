@@ -85,7 +85,8 @@ public class ImagePresentationActivity extends PresentationListActivity implemen
 			@Override
 			protected ResultMessage executeTask()
 			{
-				return client.openImage(lastFilename);
+				//return client.openImage(lastFilename);
+				return new ResultMessage("", true);
 			}
 			
 			@Override
@@ -95,6 +96,7 @@ public class ImagePresentationActivity extends PresentationListActivity implemen
 				{
 					Intent intent = new Intent(thisPanel, PresentationImageActivity.class);	
 					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
+					intent.putExtra(CommonVariables.FileName, lastFilename);
 					startActivity(intent);
 				}
 			}

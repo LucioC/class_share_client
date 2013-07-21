@@ -12,22 +12,30 @@ import org.apache.http.client.ClientProtocolException;
 
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
-import com.luciocossio.classclient.activities.BaseClientActivity;import com.luciocossio.classclient.activities.image.views.TouchImageView;
+import com.luciocossio.classclient.activities.BaseClientActivity;import com.luciocossio.classclient.activities.CommonVariables;
+import com.luciocossio.classclient.activities.image.views.TouchImageView;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.view.WindowManager;
 
 public class PresentationImageActivity extends BaseClientActivity {
 
 	protected String serverUrl;
 	ImageMoveZoomPanConnector listener = null;
+	private GestureDetectorCompat simpleGesturesDetector;
+	
+	protected String imageName = "";
+	
+	protected boolean hasStarted = false;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,9 @@ public class PresentationImageActivity extends BaseClientActivity {
 		TouchImageView imageView = getImageView();
 		imageView.setListener(listener);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+		Intent intent = getIntent();		
+		imageName = intent.getStringExtra(CommonVariables.FileName);
 		
 		this.getImage();
 	}
@@ -84,7 +95,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 
 				InputStream stream = null;
 				try {
-					stream = client.getCurrentImage();
+					stream = client.getFile(imageName);
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
