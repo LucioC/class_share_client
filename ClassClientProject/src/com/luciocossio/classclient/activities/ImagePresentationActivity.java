@@ -8,7 +8,6 @@ import com.luciocossio.classclient.R;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.image.PresentationImageActivity;
-import com.luciocossio.classclient.activities.image.PresentationSlidesActivity;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
 

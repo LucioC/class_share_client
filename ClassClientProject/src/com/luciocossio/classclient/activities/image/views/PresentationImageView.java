@@ -1,6 +1,6 @@
 package com.luciocossio.classclient.activities.image.views;
 
-import com.luciocossio.classclient.activities.listeners.FlingAndTouchPresentationListener;
+import com.luciocossio.classclient.listeners.impl.FlingAndTouchPresentationListener;
 
 import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;

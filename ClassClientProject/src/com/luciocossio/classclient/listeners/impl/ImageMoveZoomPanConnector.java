@@ -1,7 +1,8 @@
-package com.luciocossio.classclient.activities.image;
+package com.luciocossio.classclient.listeners.impl;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.async.AsyncSilentTask;
+import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
 
 public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 	

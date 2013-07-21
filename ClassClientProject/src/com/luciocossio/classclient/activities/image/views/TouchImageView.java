@@ -1,6 +1,6 @@
 package com.luciocossio.classclient.activities.image.views;
 
-import com.luciocossio.classclient.activities.image.ImageMoveZoomPanListener;
+import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;

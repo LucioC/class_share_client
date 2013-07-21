@@ -27,10 +27,11 @@ import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.activities.CommonVariables;
 import com.luciocossio.classclient.activities.image.views.PresentationImageView;
-import com.luciocossio.classclient.activities.listeners.FlingAndTouchPresentationListener;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.http.RESTApacheClient;
 import com.luciocossio.classclient.http.RESTJsonClient;
+import com.luciocossio.classclient.listeners.impl.FlingAndTouchPresentationListener;
+import com.luciocossio.classclient.listeners.impl.OnPresentationImagePageChangeListener;
 
 public class ImageGalleryActivity extends Activity {
 

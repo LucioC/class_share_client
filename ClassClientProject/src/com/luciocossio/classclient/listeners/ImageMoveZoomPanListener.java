@@ -1,4 +1,4 @@
-package com.luciocossio.classclient.activities.image;
+package com.luciocossio.classclient.listeners;
 
 public interface ImageMoveZoomPanListener {
 

@@ -1,7 +1,6 @@
 package com.luciocossio.classclient.activities.image;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +11,13 @@ import java.util.List;
 import org.apache.http.client.ClientProtocolException;
 
 import com.luciocossio.classclient.R;
+import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.BaseClientActivity;import com.luciocossio.classclient.activities.image.views.TouchImageView;
 import com.luciocossio.classclient.async.AsyncTaskList;
+import com.luciocossio.classclient.async.PresentationAsyncTask;
+import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -48,7 +51,6 @@ public class PresentationImageActivity extends BaseClientActivity {
 	public void getImage()
 	{
 		final PresentationImageActivity activity = this;
-		final ImageMoveZoomPanConnector imageConnector = listener;
 		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog, "Carregando imagem...")
 		{			
 			@Override
@@ -113,6 +115,31 @@ public class PresentationImageActivity extends BaseClientActivity {
 
 				return filesPath;
 			}			
+		};
+		task.execute();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		//super.onBackPressed();
+		closeImage();
+	}
+	
+	protected void closeImage()
+	{
+		final Activity activity = this;
+		PresentationAsyncTask task = new PresentationAsyncTask(presentationClient, dialog)
+		{			
+			@Override
+			protected ResultMessage executeTask() {
+				return client.closeImage();
+			}
+			
+			@Override
+			protected void onEndPostExecute(ResultMessage result) {
+				super.onEndPostExecute(result);
+				activity.finish();
+			}
 		};
 		task.execute();
 	}
