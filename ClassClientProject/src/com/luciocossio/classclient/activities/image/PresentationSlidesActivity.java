@@ -27,10 +27,10 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 	@Override
 	public void onBackPressed() {
 		//super.onBackPressed();
-		closeImage();
+		closePresentation();
 	}
 	
-	protected void closeImage()
+	protected void closePresentation()
 	{
 		final Activity activity = this;
 		PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
@@ -54,7 +54,7 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.menu_close:
-	        	closeImage();
+	        	closePresentation();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);

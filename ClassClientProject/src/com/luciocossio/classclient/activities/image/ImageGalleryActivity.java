@@ -16,11 +16,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 import com.luciocossio.classclient.PresentationClient;
@@ -43,6 +47,7 @@ public class ImageGalleryActivity extends Activity {
 	ImagePagerAdapter adapter;
 	OnPresentationImagePageChangeListener pageListener;
 	FlingTouchSlidesListener flingListener;
+	ViewPager viewPager;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,7 @@ public class ImageGalleryActivity extends Activity {
 
 		List<String> list = new ArrayList<String>();
 		
-		ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+		viewPager = (ViewPager) findViewById(R.id.view_pager);
 		adapter = new ImagePagerAdapter(list);
 		viewPager.setAdapter(adapter);	
 		
@@ -81,7 +86,43 @@ public class ImageGalleryActivity extends Activity {
 			}
 		};
 
+		registerViewPagerListener();
 		this.getImages();
+	}
+	
+	private void registerViewPagerListener()
+    {
+		final ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+
+		final GestureDetectorCompat simpleGesturesDetector = new GestureDetectorCompat(this, this.flingListener);
+		viewPager.setOnTouchListener(new OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+            	simpleGesturesDetector.onTouchEvent(event);
+            	            	
+            	int action = MotionEventCompat.getActionMasked(event);
+                
+        	    switch(action) {
+						
+					case MotionEvent.ACTION_UP:
+						flingListener.onFingerUpForFlingStartStop();
+						break;						
+        	    }
+        	    
+        	    if(viewPager.getScrollY() != 0) 
+        	    	return true;
+        	    
+        	    return viewPager.onTouchEvent(event);
+            }
+        });
+    }
+
+	
+	public ImagePagerAdapter getImageAdapter()
+	{
+		return adapter;
 	}
 	
 	private void initializePresentationClient()
@@ -148,14 +189,14 @@ public class ImageGalleryActivity extends Activity {
 					
 					filesPath.add(file.getAbsolutePath());
 				}
-
+				
 				return filesPath;
 			}			
 		};
 		task.execute();
 	}
 	
-	private class ImagePagerAdapter extends PagerAdapter {
+	public class ImagePagerAdapter extends PagerAdapter {
 		
 		private Uri[] mImages = new Uri[]{};
 				
@@ -186,13 +227,13 @@ public class ImageGalleryActivity extends Activity {
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {		
 			Context context = ImageGalleryActivity.this;
-			PresentationImageView imageView = new PresentationImageView(context, flingListener);
+			PresentationImageView imageView = new PresentationImageView(context);
 			int padding = context.getResources().getDimensionPixelSize(
 					R.dimen.padding_medium);
 			imageView.setPadding(padding, padding, padding, padding);
 			imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 			imageView.setImageURI(mImages[position]);
-			((ViewPager) container).addView(imageView, 0);
+			((ViewPager) container).addView(imageView);
 			
 			return imageView;
 		}

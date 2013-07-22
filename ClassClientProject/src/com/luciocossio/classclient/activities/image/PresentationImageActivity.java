@@ -28,6 +28,9 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -62,6 +65,13 @@ public class PresentationImageActivity extends BaseClientActivity {
 		flingListener.setImageName(imageName);
 		
 		this.getImage();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_control_image_presentation, menu);
+	    return true;
 	}
 
 	protected void registerTouchListener() {
@@ -201,6 +211,18 @@ public class PresentationImageActivity extends BaseClientActivity {
 	public void onBackPressed() {
 		//super.onBackPressed();
 		closeImage();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.menu_close_image:
+	        	closeImage();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	protected void closeImage()

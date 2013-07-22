@@ -38,7 +38,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-		//return super.onSingleTapConfirmed(e);
+		super.onSingleTapConfirmed(e);
 
 		if(!presentationStarted)
 		{
