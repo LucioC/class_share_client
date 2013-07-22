@@ -42,7 +42,7 @@ public class PresentationImageView extends ImageView {
 						break;
 						
 					case MotionEvent.ACTION_UP:
-						flingListener.onFingerUp();
+						flingListener.onFingerUpForFlingStartStop();
 						break;
 						
 					case MotionEvent.ACTION_MOVE:						

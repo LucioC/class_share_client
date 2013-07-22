@@ -62,7 +62,7 @@ public abstract class FlingTouchPresentationListener extends GestureDetector.Sim
     protected abstract boolean isFlingUp();
     protected abstract boolean isFlingDown();
 
-    public void onFingerUp()
+    public void onFingerUpForFlingStartStop()
     {	
     	if(isFlingUp())
     	{

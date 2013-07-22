@@ -130,13 +130,13 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 
 	@Override
 	protected boolean isFlingUp() {
-		if(this.imageView.getImagePoint().y < -Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
+		if(this.imageView.getImagePoint().y - this.imageView.getImageCenterPoint().y < -Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
 		return false;
 	}
 
 	@Override
 	protected boolean isFlingDown() {
-		if(this.imageView.getImagePoint().y > Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
+		if(this.imageView.getImagePoint().y - this.imageView.getImageCenterPoint().y > Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
 		return false;
 	}
 

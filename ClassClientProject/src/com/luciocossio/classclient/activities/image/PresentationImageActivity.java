@@ -77,30 +77,42 @@ public class PresentationImageActivity extends BaseClientActivity {
 		final TouchImageView imageView = getImageView();
 		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener)
 		{
-			PointF last = null; 
+			PointF last = null;
+			boolean flingStartedWithoutZoom = false;
 			@Override
 			public boolean onTouchEvent(MotionEvent event) {
 
 				int pointerCount = event.getPointerCount();
 
 				if(pointerCount == 1 && imageView.getImageScale() <= 1)
-				switch (event.getAction())
 				{
+					switch (event.getAction())
+					{
 					case MotionEvent.ACTION_DOWN:
+						flingStartedWithoutZoom = true;
 						last = new PointF(event.getX(), event.getY());
 						break;
-						
+
 					case MotionEvent.ACTION_UP:
-						flingListener.onFingerUp();
+						if(flingStartedWithoutZoom)
+						{
+							flingListener.onFingerUpForFlingStartStop();
+							flingStartedWithoutZoom = false;
+						}
 						break;
-						
+
 					case MotionEvent.ACTION_MOVE:						
-	                    float curX = event.getX();
-	                    float curY = event.getY();
-	                    PointF current = new PointF(curX, curY);
-	                    flingListener.updatePositionY(last, current);
-	                    last = current;
+						float curX = event.getX();
+						float curY = event.getY();
+						PointF current = new PointF(curX, curY);
+						flingListener.updatePositionY(last, current);
+						last = current;
 						break;
+					}
+				}
+				else
+				{
+					flingStartedWithoutZoom = false;
 				}
 				return super.onTouchEvent(event);
 			}
