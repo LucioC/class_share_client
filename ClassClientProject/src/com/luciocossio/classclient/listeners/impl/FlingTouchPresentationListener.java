@@ -31,41 +31,13 @@ public abstract class FlingTouchPresentationListener extends GestureDetector.Sim
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
+		
 		if(presentationStarted)
 		{
 			activity.openOptionsMenu();
 		}
 		return super.onSingleTapConfirmed(e);
 	}
-	
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2, 
-            float velocityX, float velocityY) {
-
-    	String side = directionIdentifier.onFlingReturnDirection(event1, event2);
-    	float movementDistance = directionIdentifier.totalDistance(event1, event2);
-    	
-    	resetScrollHeight();
-    	if( movementDistance < scrollBoundary - scrollBoundary/4) return true;
-    	
-    	if(callServer && !presentationStarted && canStart())
-    	{
-    		if(side == Gestures.FLING_UP)
-    		{
-    			startPresentation(client, dialog);	
-    		}
-    	}
-    	
-    	if(presentationStarted && canClose())
-    	{
-    		if(side == Gestures.FLING_DOWN)
-    		{
-    			closePresentation(client, dialog);
-    		}
-    	}
-        
-        return true;
-    }
     
     public abstract void startPresentation(PresentationClient client, ProgressDialog dialog);
     
@@ -87,8 +59,26 @@ public abstract class FlingTouchPresentationListener extends GestureDetector.Sim
     
     protected abstract void resetScrollHeight();
     
+    protected abstract boolean isFlingUp();
+    protected abstract boolean isFlingDown();
+
     public void onFingerUp()
     {	
+    	if(isFlingUp())
+    	{
+    		if(callServer && !presentationStarted && canStart())
+    		{
+    			startPresentation(client, dialog);	
+    		}
+    	}
+    	else if(isFlingDown())
+    	{
+    		if(presentationStarted && canClose())
+    		{
+    			closePresentation(client, dialog);
+    		}
+    	}    	
+
     	resetScrollHeight();
     }
 	

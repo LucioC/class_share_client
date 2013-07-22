@@ -28,7 +28,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 	{
 		float localDistanceY = last.y - current.y;
 
-		if(Math.abs(imageView.getImagePoint().y-localDistanceY-yInitialPosition) < scrollBoundary)
+		if(Math.abs(imageView.getImagePoint().y-localDistanceY-imageView.getImageCenterPoint().y) < scrollBoundary)
 		{
 			//this.viewPager.scrollTo(this.viewPager.getScrollX(), (int)(this.viewPager.getScrollY()+dy) );
 			PointF newPosition = new PointF(imageView.getImagePoint().x,imageView.getImagePoint().y-localDistanceY);
@@ -96,7 +96,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 
     public boolean canClose()
     {
-    	if(imageView.getImageScale() < 1.1)
+    	if(imageView.getImageScale() <= 1)
     	{
     		return true;    	
     	}
@@ -105,7 +105,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
     
     public boolean canStart()
     {
-    	if(imageView.getImageScale() < 1.1)
+    	if(imageView.getImageScale() <= 1)
     	{
     		return true;    	
     	}
@@ -114,10 +114,9 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 
     protected void resetScrollHeight()
     {
-    	if(imageView.getImageScale() < 1.1)
+    	if(imageView.getImageScale() <= 1)
     	{
-    		PointF newPosition = new PointF(imageView.getImagePoint().x, yInitialPosition);
-    		this.imageView.updateImagePosition(newPosition, imageView.getImagePoint());
+    		this.imageView.updateImagePosition(imageView.getImageCenterPoint(), imageView.getImagePoint());
     	}
     }
 
@@ -128,13 +127,17 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
 	}
-	
-	public float getyInitialPosition() {
-		return yInitialPosition;
+
+	@Override
+	protected boolean isFlingUp() {
+		if(this.imageView.getImagePoint().y < -Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
+		return false;
 	}
 
-	public void setyInitialPosition(float yInitialPosition) {
-		this.yInitialPosition = yInitialPosition;
+	@Override
+	protected boolean isFlingDown() {
+		if(this.imageView.getImagePoint().y > Math.abs(scrollBoundary - scrollBoundary/4) ) return true;
+		return false;
 	}
 
 

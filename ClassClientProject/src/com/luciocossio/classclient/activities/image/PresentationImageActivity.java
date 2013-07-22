@@ -81,10 +81,12 @@ public class PresentationImageActivity extends BaseClientActivity {
 			@Override
 			public boolean onTouchEvent(MotionEvent event) {
 
+				int pointerCount = event.getPointerCount();
+
+				if(pointerCount == 1 && imageView.getImageScale() <= 1)
 				switch (event.getAction())
 				{
 					case MotionEvent.ACTION_DOWN:
-						thisPanel.setYInitialPosition(imageView.getImagePoint().y);
 						last = new PointF(event.getX(), event.getY());
 						break;
 						
@@ -104,11 +106,6 @@ public class PresentationImageActivity extends BaseClientActivity {
 			}
 		};
 		getImageView().registerListener(simpleGesturesDetector);
-	}
-	
-	public void setYInitialPosition(float y)
-	{
-		flingListener.setyInitialPosition(y);
 	}
 	
 	public TouchImageView getImageView()

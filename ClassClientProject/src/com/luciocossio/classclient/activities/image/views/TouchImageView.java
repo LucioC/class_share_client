@@ -90,7 +90,7 @@ public class TouchImageView extends ImageView
 				
 				if(newRegisteredDetector != null)
 					newRegisteredDetector.onTouchEvent(event);
-
+				
 				matrix.getValues(m);
 				PointF curr = new PointF(event.getX(), event.getY());
 				
@@ -136,6 +136,11 @@ public class TouchImageView extends ImageView
 		float x = m[Matrix.MTRANS_X];
 		float y = m[Matrix.MTRANS_Y];
 		return new PointF(x,y);
+	}
+	
+	public PointF getImageCenterPoint()
+	{
+		return new PointF(redundantXSpace,redundantYSpace);
 	}
 
 	public void updateImagePosition(PointF curr, PointF last) {

@@ -90,4 +90,16 @@ public class FlingTouchSlidesListener extends FlingTouchPresentationListener {
     	this.viewPager.scrollTo(this.viewPager.getScrollX(), 0 );
     }
 
+	@Override
+	protected boolean isFlingUp() {
+		if(viewPager.getScrollY() > scrollBoundary - scrollBoundary/4) return true;
+		return false;
+	}
+
+	@Override
+	protected boolean isFlingDown() {
+		if(viewPager.getScrollY() < -( scrollBoundary - scrollBoundary/4 )) return true;
+		return false;
+	}
+
 }
