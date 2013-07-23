@@ -85,7 +85,12 @@ public class PresentationImageActivity extends BaseClientActivity {
 			}			
 		};		
 		final TouchImageView imageView = getImageView();
-		simpleGesturesDetector = new GestureDetectorCompat(this, flingListener)
+		simpleGesturesDetector = createSimpleGestureDetector(imageView);
+		getImageView().registerListener(simpleGesturesDetector);
+	}
+
+	protected GestureDetectorCompat createSimpleGestureDetector(final TouchImageView imageView) {
+		return new GestureDetectorCompat(this, flingListener)
 		{
 			PointF last = null;
 			boolean flingStartedWithoutZoom = false;
@@ -127,7 +132,6 @@ public class PresentationImageActivity extends BaseClientActivity {
 				return super.onTouchEvent(event);
 			}
 		};
-		getImageView().registerListener(simpleGesturesDetector);
 	}
 	
 	public TouchImageView getImageView()
