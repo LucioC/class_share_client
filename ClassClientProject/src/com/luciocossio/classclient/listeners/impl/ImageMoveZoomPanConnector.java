@@ -19,6 +19,8 @@ public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 	protected float top = 0;
 	protected float bottom = 0;
 	
+	protected int imageAngle = 0;
+	
 	protected int minimumMoveInterval = 25;
 	
 	PresentationClient client;
@@ -52,16 +54,25 @@ public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 			final Integer newBottom = (int)bottom;
 			final Integer sourceHeight = imageHeight;
 			final Integer sourceWidth = imageWidth;
+			final Integer currentAngle = this.imageAngle;
 			
 			lastTime = System.currentTimeMillis();
 			AsyncSilentTask task = new AsyncSilentTask(client)
 			{
 				protected com.luciocossio.classclient.ResultMessage executeTask() {
-					return this.client.updateImageVisiblePart(newLeft, newTop, newRight, newBottom, sourceHeight, sourceWidth);
+					return this.client.updateImageVisiblePart(newLeft, newTop, newRight, newBottom, sourceHeight, sourceWidth, currentAngle);
 				}
 			};
 			task.execute();
 		}
+	}
+
+	public int getImageAngle() {
+		return imageAngle;
+	}
+
+	public void setImageAngle(int imageAngle) {
+		this.imageAngle = imageAngle;
 	}
 
 	@Override

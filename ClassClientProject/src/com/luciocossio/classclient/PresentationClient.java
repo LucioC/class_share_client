@@ -140,12 +140,12 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		
 		return doPut(url,"{\"command\":\"zoom\", \"param\":\""+ zoom + ":" + x + ":" + y + "\"}");
 	}
-	
-	public ResultMessage updateImageVisiblePart(int left, int top, int right, int bottom, int imageHeight, int imageWidth)
+		
+	public ResultMessage updateImageVisiblePart(int left, int top, int right, int bottom, int imageHeight, int imageWidth, int angle)
 	{
 		String url = serverUrl + IMAGE_COMMAND;
 		
-		return doPut(url,"{\"command\":\"visiblepart\", \"param\":\""+ left + ":" + top + ":" + right + ":" + bottom + ":" + imageHeight + ":" + imageWidth + "\"}");
+		return doPut(url,"{\"command\":\"visiblepart\", \"param\":\""+ left + ":" + top + ":" + right + ":" + bottom + ":" + imageHeight + ":" + imageWidth + ":" + angle + "\"}");
 	}
 	
 	public ResultMessage zoomImage(float zoom)

@@ -18,6 +18,8 @@ import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.listeners.impl.FlingTouchImageListener;
 import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
+import com.luciocossio.gestures.detectors.RotationGestureDetector;
+import com.luciocossio.gestures.listeners.RotationListener;
 
 import android.app.Activity;
 import android.content.Intent;

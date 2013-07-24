@@ -17,12 +17,16 @@ public class RotationListener implements OnRotationGestureListener {
 	
 	@Override
 	public boolean onRotationStart() {
-		accumulatedAngle = 0;		
+		accumulatedAngle = 0;
+		lastAngle = 0;
 		return true;
 	}
 
 	@Override
-	public boolean onRotation(float angleChange) {
+	public boolean onRotation(float angleChange, float distanceChange) {
+		
+		if(Math.abs(distanceChange) > Math.abs(angleChange)) return false;
+		
 		accumulatedAngle += angleChange;
 		
 		float difference = accumulatedAngle - lastAngle;		

@@ -56,9 +56,12 @@ public class RotationGestureDetector {
 				} else {
 					angleChange = angleBetweenLines(finger1, finger2, newFinger1, newFinger2);
 				}
+				
+				float distance1 = distanceBetweenPoints(finger1,finger2);
+				float distance2 = distanceBetweenPoints(newFinger1, newFinger2);
 
 				if (listener != null) {
-					listener.onRotation(angleChange);
+					listener.onRotation(angleChange, distance2 - distance1);
 				}
 				
 				finger1 = newFinger1;
@@ -73,6 +76,12 @@ public class RotationGestureDetector {
 			break;
 		}
 		return true;
+	}
+
+	private float distanceBetweenPoints(PointF p1, PointF p2)
+	{
+		float distance = (float)Math.sqrt( Math.pow(p1.x-p2.x,2) + Math.pow(p1.y - p2.y,2));
+		return distance;		
 	}
 
 	private float getMidpoint(float a, float b){

@@ -1,9 +1,12 @@
 package com.luciocossio.classclient.activities.image.views;
 
 import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
+import com.luciocossio.gestures.detectors.RotationGestureDetector;
+import com.luciocossio.gestures.listeners.RotationListener;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -29,6 +32,7 @@ public class TouchImageView extends ImageView
 	static final int NONE = 0;
 	static final int DRAG = 1;
 	static final int ZOOM = 2;
+	static final int ROTATION = 3;
 	int mode = NONE;
 
 	// Remember some things for zooming
@@ -46,6 +50,9 @@ public class TouchImageView extends ImageView
 	float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
 	
 	ScaleGestureDetector mScaleDetector;
+	
+	private RotationGestureDetector rotationDetector;
+	private RotationListener rotationListener;
 
 	Context context;
 	
@@ -74,7 +81,8 @@ public class TouchImageView extends ImageView
 		matrix.setTranslate(1f, 1f);
 		m = new float[9];
 		setImageMatrix(matrix);
-		setScaleType(ScaleType.MATRIX);		
+		setScaleType(ScaleType.MATRIX);
+		createRotationDetector();
 		registerListener(null);
 	}
 	
@@ -86,7 +94,8 @@ public class TouchImageView extends ImageView
 			@Override
 			public boolean onTouch(View v, MotionEvent event)
 			{
-				mScaleDetector.onTouchEvent(event);
+				mScaleDetector.onTouchEvent(event);				
+				rotationDetector.onTouchEvent(event);
 				
 				if(newRegisteredDetector != null)
 					newRegisteredDetector.onTouchEvent(event);
@@ -113,7 +122,8 @@ public class TouchImageView extends ImageView
 						int xDiff = (int) Math.abs(curr.x - start.x);
 						int yDiff = (int) Math.abs(curr.y - start.y);
 						if (xDiff < CLICK && yDiff < CLICK)
-							performClick();						
+							performClick();
+						resizeAndCentralize();
 						break;
 
 					case MotionEvent.ACTION_POINTER_UP:
@@ -130,6 +140,56 @@ public class TouchImageView extends ImageView
 		});
 	}
 	
+	protected void createRotationDetector()
+	{
+		final TouchImageView imageView = this;
+		final int minimumAngle = 12;
+		rotationListener = new RotationListener(minimumAngle)
+		{
+			private boolean rotated = false;
+			
+			@Override
+			public boolean onRotationStart() {
+				rotated = false;
+				return super.onRotationStart();
+			}
+			
+			@Override
+			public boolean onRotation(float angleChange, float distanceChange) {
+				
+				if(imageView.getImageScale() > 1) return false;
+				if(mode == ZOOM) return false;
+				
+				if(Math.abs(angleChange) > Math.abs(distanceChange))
+				{
+					mode = ROTATION;
+				}
+				
+				return super.onRotation(angleChange, distanceChange);				
+			}
+			
+			@Override
+			protected void rotationChange(float angleChange,
+					float accumulatedAngle, float lastAngle) {
+				
+				if(rotated) return;
+				
+				if(angleChange >= minimumAngle)
+				{
+					imageView.setImageBitmap(imageView.getImageBitmap(), imageView.getRotationDegrees() - 90);
+					rotated = true;
+				}
+				else if(angleChange <= -minimumAngle)
+				{
+					imageView.setImageBitmap(imageView.getImageBitmap(), imageView.getRotationDegrees() + 90);
+					rotated = true;
+				}
+				imageView.invalidate();
+			}			
+		};
+		rotationDetector = new RotationGestureDetector(rotationListener);		
+	}
+		
 	public PointF getImagePoint()
 	{
 		matrix.getValues(m);
@@ -199,10 +259,32 @@ public class TouchImageView extends ImageView
 		this.listener = newListener;		
 		scaleListener.setImageListener(listener);
 	}
-
+	
+	public Bitmap getImageBitmap()
+	{
+		return imageBitmap;		
+	}
+	
+	private Bitmap imageBitmap = null;
+	
 	@Override
 	public void setImageBitmap(Bitmap bm)
 	{
+		this.imageBitmap = bm;
+		super.setImageBitmap(bm);
+		if (bm != null)
+		{
+			bmWidth = bm.getWidth();
+			bmHeight = bm.getHeight();
+		}
+	}
+	
+	private int rotationDegrees = 0;
+
+	public void setImageBitmap(Bitmap bm, int degrees)
+	{
+		this.rotationDegrees = degrees;
+		bm = copyBitmapWithRotation(bm, degrees);
 		super.setImageBitmap(bm);
 		if (bm != null)
 		{
@@ -251,13 +333,16 @@ public class TouchImageView extends ImageView
 		@Override
 		public boolean onScaleBegin(ScaleGestureDetector detector)
 		{
-			mode = ZOOM;
+			if(mode != ROTATION)
+				mode = ZOOM;
 			return true;
 		}
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector)
 		{
+			if(mode != ZOOM) return false;
+			
 			float mScaleFactor = (float) Math.min(
 				Math.max(.95f, detector.getScaleFactor()), 1.05);
 			float origScale = saveScale;
@@ -347,6 +432,10 @@ public class TouchImageView extends ImageView
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		width = MeasureSpec.getSize(widthMeasureSpec);
 		height = MeasureSpec.getSize(heightMeasureSpec);
+		resizeAndCentralize();
+	}
+
+	protected void resizeAndCentralize() {
 		// Fit to screen.
 		float scale;
 		float scaleX = (float) width / (float) bmWidth;
@@ -369,5 +458,19 @@ public class TouchImageView extends ImageView
 		right = width * saveScale - width - (2 * redundantXSpace * saveScale);
 		bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
 		setImageMatrix(matrix);
+	}
+	
+	public Bitmap copyBitmapWithRotation(Bitmap bitmap, int degrees)
+	{		
+		Matrix matrix = new Matrix();
+		matrix.preRotate(degrees, bitmap.getWidth()/2, bitmap.getHeight()/2);
+		Bitmap rotatedBitmap = Bitmap.createBitmap(
+				bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+		
+		return rotatedBitmap;
+	}
+	
+	public int getRotationDegrees() {
+		return rotationDegrees;
 	}
 }
