@@ -123,7 +123,8 @@ public class TouchImageView extends ImageView
 						int yDiff = (int) Math.abs(curr.y - start.y);
 						if (xDiff < CLICK && yDiff < CLICK)
 							performClick();
-						resizeAndCentralize();
+						if(getImageScale() <= 1)
+							resizeAndCentralize();
 						break;
 
 					case MotionEvent.ACTION_POINTER_UP:
@@ -313,6 +314,8 @@ public class TouchImageView extends ImageView
 
 		left = (left!=0) ? left/scale : 0;
 		top = (top!=0) ? top/scale : 0;
+		
+		listener.setImageAngle(this.rotationDegrees);
 		
 		//Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
 		//Log.i("ZOOM", scale + "");
