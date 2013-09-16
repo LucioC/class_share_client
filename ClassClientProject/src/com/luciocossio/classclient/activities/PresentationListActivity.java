@@ -11,8 +11,7 @@ public abstract class PresentationListActivity extends BaseClientActivity {
 		super.onCreate(savedInstanceState);
 		setContentView();		
 		lastFilename = "presentation.pptx";		
-		setListListener();		
-		this.updateList();
+		setListListener();
 	}
 
 	public PresentationListActivity() {

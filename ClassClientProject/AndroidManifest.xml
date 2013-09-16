@@ -15,22 +15,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name="com.luciocossio.classclient.activities.PowerPointPresentationActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme"
-        	android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
-            </intent-filter>
-        </activity>
         
         <activity
-            android:name="com.luciocossio.classclient.activities.ChooseServiceActivity"
+            android:name="com.luciocossio.classclient.activities.ChooseFileActivity"
             android:label="@string/title_activity_choose_service"
         	android:screenOrientation="portrait" >
             <intent-filter>
@@ -38,33 +25,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.luciocossio.classclient.activities.ImagePresentationActivity"
-            android:label="@string/title_activity_image_presentation"
-        	android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.luciocossio.classclient.activities.ControlPowerPointActivity"
-            android:label="@string/title_activity_control_power_point"
-        	android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.luciocossio.classclient.activities.ControlImagePresentationActivity"
-            android:label="@string/title_activity_control_image_presentation"
-        	android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.luciocossio.classclient.activities.image.ImageGalleryActivity"
@@ -80,16 +40,6 @@
             android:name="com.luciocossio.classclient.activities.image.PresentationImageActivity"
             android:label="@string/title_activity_control_image_presentation"
             android:configChanges="orientation|keyboardHidden|screenSize" >
-        </activity>
-        <activity
-            android:name="com.luciocossio.classclient.activities.ControlImagePresentationActivityGesture"
-            android:label="@string/title_activity_control_image_presentation"
-        	android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.luciocossio.classclient.activities.ControlPowerPointActivityGesture"
-            android:label="@string/title_activity_control_image_presentation"
-        	android:screenOrientation="portrait" >
         </activity>
         <activity android:name="com.luciocossio.classclient.activities.PrefsActivity"
             	  android:label="@string/titlePrefs"></activity>
