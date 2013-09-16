@@ -30,6 +30,7 @@ public class BaseClientActivity extends Activity {
 		serverUrl = intent.getStringExtra(CommonVariables.ServerAddress);
 	
 		dialog = new ProgressDialog(this);
+		initializePresentationClient();
 	}
 
 	protected void initializePresentationClient() {
