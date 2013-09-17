@@ -16,27 +16,29 @@ import com.luciocossio.classclient.activities.BaseClientActivity;import com.luci
 import com.luciocossio.classclient.activities.image.views.TouchImageView;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
+import com.luciocossio.classclient.http.server.RegisterForServerUpdates;
+import com.luciocossio.classclient.http.server.HTTPService;
 import com.luciocossio.classclient.listeners.impl.FlingTouchImageListener;
 import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
-import com.luciocossio.gestures.detectors.RotationGestureDetector;
-import com.luciocossio.gestures.listeners.RotationListener;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
-import android.view.View.OnTouchListener;
 
 public class PresentationImageActivity extends BaseClientActivity {
 
@@ -67,6 +69,38 @@ public class PresentationImageActivity extends BaseClientActivity {
 		flingListener.setImageName(imageName);
 		
 		this.getImage();
+		
+		receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				updateImageState();
+			}
+		};
+		RegisterForServerUpdates.startServiceForImageUpdate(this, presentationClient);
+	}
+	
+	public void updateImageState()
+	{
+		Log.i("ImageActivity","image state should be updated");
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		RegisterForServerUpdates.stopService(this, presentationClient);
+	}
+	
+	private BroadcastReceiver receiver;
+	@Override
+	protected void onStart() {
+	    super.onStart();
+	    LocalBroadcastManager.getInstance(this).registerReceiver((receiver), new IntentFilter(HTTPService.NEW_REQUEST));
+	}
+
+	@Override
+	protected void onStop() {
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+	    super.onStop();
 	}
 	
 	@Override

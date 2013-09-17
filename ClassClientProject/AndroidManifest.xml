@@ -55,8 +55,10 @@
         <category android:name="android.intent.category.OPENABLE" />
 
         <data android:mimeType="*/*" />
-    </intent-filter>
-</activity>
+    	</intent-filter>
+		</activity>
+		
+		<service android:name="com.luciocossio.classclient.http.server.HTTPService" /> 
     </application>
 
 </manifest>

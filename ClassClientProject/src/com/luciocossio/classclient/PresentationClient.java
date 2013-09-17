@@ -25,6 +25,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 	private final String GOTOSLIDE_PATH = "presentation/action";
 	private final String CLOSE_PRESENTATION_PATH = "presentation/action";
 	private final String FILE_PATH = "files";
+	private final String LISTENERS_PATH = "listeners";
 	
 	private String serverUrl;
 	
@@ -111,6 +112,27 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		String url = serverUrl + OPEN_IMAGE_PATH;
 		
 		return doPut(url, "{\"fileName\":\""+ fileName +"\"}");
+	}
+	
+	public ResultMessage addListenerForSlidesPresentation()
+	{		
+		String url = serverUrl + LISTENERS_PATH;
+		
+		return doPost(url, "{\"mode\":\"slides\"}");
+	}
+	
+	public ResultMessage addListenerForImagePresentation()
+	{		
+		String url = serverUrl + LISTENERS_PATH;
+		
+		return doPost(url, "{\"mode\":\"image\"}");
+	}
+	
+	public ResultMessage deleteListener()
+	{		
+		String url = serverUrl + LISTENERS_PATH;
+		
+		return doDelete(url);
 	}
 	
 	public ResultMessage closeImage()

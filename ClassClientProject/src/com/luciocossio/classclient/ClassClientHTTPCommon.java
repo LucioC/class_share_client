@@ -130,5 +130,56 @@ public class ClassClientHTTPCommon {
 	
 		return message;
 	}
-
+		
+	public ResultMessage doPost(String url, String content) {
+		RESTJsonResponse response = restClient.doPost(url, content);
+		ResultMessage message;
+	
+		try
+		{
+			Gson gson = new Gson();
+			message = gson.fromJson(response.getJsonContent(), ResultMessage.class);
+	
+			if (response.getHttpStatus() >= 200 && response.getHttpStatus() < 400)
+			{
+				message.setWasSuccessful(true);
+			}
+			else
+			{
+				message.setWasSuccessful(false);
+			}
+		}
+		catch(Exception e)
+		{
+			return new ResultMessage(e.fillInStackTrace().toString(), false);
+		}
+	
+		return message;
+	}
+	
+	public ResultMessage doDelete(String url) {
+		RESTJsonResponse response = restClient.doDelete(url);
+		ResultMessage message;
+	
+		try
+		{
+			Gson gson = new Gson();
+			message = gson.fromJson(response.getJsonContent(), ResultMessage.class);
+	
+			if (response.getHttpStatus() >= 200 && response.getHttpStatus() < 400)
+			{
+				message.setWasSuccessful(true);
+			}
+			else
+			{
+				message.setWasSuccessful(false);
+			}
+		}
+		catch(Exception e)
+		{
+			return new ResultMessage(e.fillInStackTrace().toString(), false);
+		}
+	
+		return message;
+	}
 }

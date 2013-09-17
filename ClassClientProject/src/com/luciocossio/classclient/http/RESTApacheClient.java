@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -65,10 +66,31 @@ public class RESTApacheClient implements RESTJsonClient {
 
 	@Override
 	public RESTJsonResponse doPost(String location, String jsonContent) {
-		// TODO Auto-generated method stub
+		HttpPost httpPost = new HttpPost(location);
+		httpPost.setHeader("Content-Type", "application/json");
+		StringEntity jsonEntity;
+		try {
+			jsonEntity = new StringEntity(jsonContent);			
+		} catch (UnsupportedEncodingException e1) {
+			return new RESTJsonResponse(400,"{\"message\": \"Bad json entity\"}"); 
+		}
+		httpPost.setEntity(jsonEntity);
 		
-		
-		return null;
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		try {
+			httpResponse = client.execute(httpPost);
+			jsonResponse = new RESTJsonResponse(httpResponse.getStatusLine().getStatusCode(), 
+					EntityUtils.toString(httpResponse.getEntity() ));
+						
+			return jsonResponse;
+		} catch (ClientProtocolException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (IOException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (Exception e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		}
 	}
 	
 	@Override
@@ -121,8 +143,21 @@ public class RESTApacheClient implements RESTJsonClient {
 
 	@Override
 	public RESTJsonResponse doDelete(String location) {
-		// TODO Auto-generated method stub
-		return null;
+		HttpDelete httpDelete = new HttpDelete(location);
+				
+		HttpResponse httpResponse;
+		RESTJsonResponse jsonResponse;
+		try {
+			httpResponse = client.execute(httpDelete);
+			jsonResponse = new RESTJsonResponse(httpResponse.getStatusLine().getStatusCode(), 
+					EntityUtils.toString(httpResponse.getEntity() ));
+						
+			return jsonResponse;
+		} catch (ClientProtocolException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		} catch (IOException e) {
+			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
+		}
 	}
 
 	@Override

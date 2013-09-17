@@ -53,7 +53,7 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 	
 	@Override
 	public void onAttachedToWindow() {
-	    openOptionsMenu(); 
+	    //openOptionsMenu(); 
 	};
 
 	@Override
