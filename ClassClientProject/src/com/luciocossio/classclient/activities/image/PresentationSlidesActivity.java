@@ -70,7 +70,11 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 	{
 		if(presentationInfo.getSlidesNumber() != 0)
 		{
-			viewPager.setCurrentItem(presentationInfo.getCurrentSlide());
+			if(viewPager.getCurrentItem() != presentationInfo.getCurrentSlide()-1)
+			{
+				pageListener.setToIgnoreNextPageChange();
+				viewPager.setCurrentItem(presentationInfo.getCurrentSlide()-1);
+			}
 		}
 	}
 	

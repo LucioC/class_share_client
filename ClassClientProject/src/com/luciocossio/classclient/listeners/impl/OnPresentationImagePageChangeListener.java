@@ -47,7 +47,7 @@ public class OnPresentationImagePageChangeListener implements OnPageChangeListen
 	public void onPageSelected(int position) {
 		Log.i("ChangeListener", "onPageSelected " + position);
 
-		if(callServer)
+		if(callServer && !shouldIgnoreNextPageChange)
 		{
 			final String toSlide = String.valueOf(position+1);
 			PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)
@@ -60,10 +60,17 @@ public class OnPresentationImagePageChangeListener implements OnPageChangeListen
 			};
 			task.execute();
 		}
+		shouldIgnoreNextPageChange = false;
 	}
 
 	public void setCallServer(boolean callServer) {
 		this.callServer = callServer;
+	}
+		
+	boolean shouldIgnoreNextPageChange = false;
+	public void setToIgnoreNextPageChange()
+	{
+		shouldIgnoreNextPageChange = true;
 	}
 
 }
