@@ -233,8 +233,7 @@ public class ImageGalleryActivity extends Activity {
 			imageView.setPadding(padding, padding, padding, padding);
 			imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 			imageView.setImageURI(mImages[position]);
-			((ViewPager) container).addView(imageView);
-			
+			((ViewPager) container).addView(imageView);		
 			return imageView;
 		}
 

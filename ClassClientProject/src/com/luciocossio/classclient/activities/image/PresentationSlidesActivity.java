@@ -1,5 +1,9 @@
 package com.luciocossio.classclient.activities.image;
 
+import java.util.List;
+
+import com.luciocossio.classclient.PresentationClient;
+import com.luciocossio.classclient.PresentationInfo;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
@@ -11,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -29,15 +34,44 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 		receiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				updateSlidesState();
+				getPresentationInfoFromServer();
 			}
 		};
 		RegisterForServerUpdates.startServiceForSlidesUpdate(this, client);
 	}
 	
-	public void updateSlidesState()
+	public void getPresentationInfoFromServer()
+	{			
+		final PresentationSlidesActivity activity = this;
+		final PresentationClient client = this.client;
+		AsyncTask<String, Void, PresentationInfo> task = new AsyncTask<String, Void, PresentationInfo>()
+		{					
+			PresentationInfo result;
+
+			@Override
+			protected PresentationInfo doInBackground(String... params) {						
+				result = client.getPresentationInfo();
+				return result;
+			}
+			
+			@Override
+			protected void onPostExecute(PresentationInfo result) {
+				activity.updatePresentationState(result);
+			}
+			
+			@Override
+			protected void onPreExecute() {
+			}
+		};
+		task.execute();
+	}
+	
+	public void updatePresentationState(PresentationInfo presentationInfo)
 	{
-		Log.i("SlidesAcitivity","slides state should be updated");
+		if(presentationInfo.getSlidesNumber() != 0)
+		{
+			viewPager.setCurrentItem(presentationInfo.getCurrentSlide());
+		}
 	}
 	
 	@Override

@@ -23,6 +23,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 	private final String NEXT_SLIDE_PATH = "presentation/action";
 	private final String PREVIOUS_SLIDE_PATH = "presentation/action";
 	private final String GOTOSLIDE_PATH = "presentation/action";
+	private final String PRESENTATION_INFO = "presentation/info";
 	private final String CLOSE_PRESENTATION_PATH = "presentation/action";
 	private final String FILE_PATH = "files";
 	private final String LISTENERS_PATH = "listeners";
@@ -245,6 +246,16 @@ public class PresentationClient extends ClassClientHTTPCommon {
 		Gson gson = new Gson();
 		ListOfFiles list = gson.fromJson(message.getMessage(), ListOfFiles.class);
 		return list.getFiles();
+	}
+	
+	public PresentationInfo getPresentationInfo() {
+		String url = serverUrl + PRESENTATION_INFO;
+		
+		ResultMessage message = this.doGet(null, url);
+		
+		Gson gson = new Gson();
+		PresentationInfo presentation = gson.fromJson(message.getMessage(), PresentationInfo.class);
+		return presentation;
 	}
 	
 	public List<String> getImageFileNames() {
