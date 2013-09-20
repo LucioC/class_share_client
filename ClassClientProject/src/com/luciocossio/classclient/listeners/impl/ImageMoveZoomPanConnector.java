@@ -75,9 +75,4 @@ public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
 		this.imageAngle = imageAngle;
 	}
 
-	@Override
-	public void rotate(float angle) {
-		// TODO Auto-generated method stub
-		
-	}
 }

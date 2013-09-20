@@ -32,7 +32,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 		{
 			//this.viewPager.scrollTo(this.viewPager.getScrollX(), (int)(this.viewPager.getScrollY()+dy) );
 			PointF newPosition = new PointF(imageView.getImagePoint().x,imageView.getImagePoint().y-localDistanceY);
-			this.imageView.updateImagePosition(newPosition, imageView.getImagePoint());
+			this.imageView.updateImagePositionAndTriggerServerUpdate(newPosition, imageView.getImagePoint());
 		}		
 	}
 
@@ -116,7 +116,7 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
     {
     	if(imageView.getImageScale() <= 1)
     	{
-    		this.imageView.updateImagePosition(imageView.getImageCenterPoint(), imageView.getImagePoint());
+    		this.imageView.updateImagePositionAndTriggerServerUpdate(imageView.getImageCenterPoint(), imageView.getImagePoint());
     	}
     }
 

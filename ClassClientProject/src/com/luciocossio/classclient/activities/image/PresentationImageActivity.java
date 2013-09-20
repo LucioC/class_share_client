@@ -112,6 +112,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 	public void updatePresentationState(ImagePresentationInfo presentationInfo)
 	{
 		Log.i("PresentationImageActivity", "should udpate image state");
+		getImageView().updateImageState(presentationInfo);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package com.luciocossio.classclient.activities.image.views;
 
+import com.luciocossio.classclient.ImagePresentationInfo;
 import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
 import com.luciocossio.gestures.detectors.RotationGestureDetector;
 import com.luciocossio.gestures.listeners.RotationListener;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.provider.MediaStore.Images;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -86,6 +88,83 @@ public class TouchImageView extends ImageView
 		registerListener(null);
 	}
 	
+	public void updateImageState(ImagePresentationInfo imageInfo)
+	{
+		ImageState currentState = getImageCurrentState();
+		
+		ImageState newState = new ImageState();
+				
+		int imageWidthToShow = imageInfo.getRight() - imageInfo.getLeft();		
+		int imageHeightToShow = imageInfo.getBottom() - imageInfo.getTop();
+		
+		float heightMultiplier = (float)getHeight() / imageHeightToShow;
+		float widthMultiplier = (float)getWidth() / imageWidthToShow;
+				
+		//set rotation
+		newState.setRotation(imageInfo.getRotation());
+		rotateImage(newState.getRotation());
+		
+		int x = 0;
+		int y = 0;
+		float zoom = currentState.getZoom();
+		if(heightMultiplier < widthMultiplier)
+		{
+			zoom = heightMultiplier;
+			newState.setZoom(zoom);
+			newState.setTop((int)(imageInfo.getTop()*zoom));
+			newState.setBottom((int)(imageInfo.getBottom()*zoom));
+
+			int screenWidth = getWidth();
+			int imageScaledWidthToShow = (int)(imageWidthToShow*zoom);
+			int widthExcess = (int)(screenWidth - imageScaledWidthToShow);
+			newState.setLeft((int)(imageInfo.getLeft()*zoom));
+			newState.setRight((int)(imageInfo.getRight()*zoom));
+			
+			int imageScaledWidth = (int)(currentState.getWidth()*zoom);
+			if(imageScaledWidth < screenWidth)
+			{
+				newState.setLeft(screenWidth/2 - imageScaledWidth/2);
+				x = newState.getLeft();				
+			}
+			else
+			{
+				x = -newState.getLeft() + (widthExcess/2);				
+			}
+			y = -newState.getTop();
+		}
+		else
+		{
+			zoom = widthMultiplier;
+			newState.setZoom(zoom);
+			newState.setLeft((int)(imageInfo.getLeft()*zoom));
+			newState.setRight((int)(imageInfo.getRight()*zoom));
+
+			int screenHeight = getHeight();
+			int imageScaledHeightToShow = (int)(imageHeightToShow*zoom);
+			int heightExcess = (int)(screenHeight - imageScaledHeightToShow);			
+			newState.setTop((int)(imageInfo.getTop()*zoom));
+			newState.setBottom((int)(imageInfo.getBottom()*zoom));
+
+			int imageScaledHeight = (int)(currentState.getHeight()*zoom);
+			if(imageScaledHeight < screenHeight) 
+			{
+				newState.setTop(screenHeight/2 - imageScaledHeight/2);
+				y = newState.getTop();
+			}
+			else
+			{
+				y = -newState.getTop() + (heightExcess/2);
+			}
+			x = -newState.getLeft();
+		}
+
+		float scaleFactor = newState.getZoom() / currentState.getZoom();
+		scaleByMultiplier((int)width / 2, (int)height / 2, scaleFactor);
+		updateImagePosition(new PointF(x, y), getImagePoint(), true);
+		
+		invalidate();
+	}
+	
 	public void registerListener(GestureDetectorCompat newDetector)
 	{
 		final GestureDetectorCompat newRegisteredDetector = newDetector;
@@ -113,7 +192,7 @@ public class TouchImageView extends ImageView
 					case MotionEvent.ACTION_MOVE:
 						if (mode == DRAG)
 						{
-							updateImagePosition(curr, last, false);
+							updateImagePositionAndTriggerServerUpdate(curr, last, false);
 						}
 						break;
 
@@ -177,18 +256,29 @@ public class TouchImageView extends ImageView
 				
 				if(angleChange >= minimumAngle)
 				{
-					imageView.setImageBitmap(imageView.getImageBitmap(), imageView.getRotationDegrees() - 90);
+					imageView.rotateImage(imageView.getRotationDegrees() - 90);
 					rotated = true;
 				}
 				else if(angleChange <= -minimumAngle)
 				{
-					imageView.setImageBitmap(imageView.getImageBitmap(), imageView.getRotationDegrees() + 90);
+					imageView.rotateImage(imageView.getRotationDegrees() + 90);
 					rotated = true;
 				}
-				imageView.invalidate();
+				
+				if(rotated)
+				imageView.updateVisiblePartDimensions();
 			}			
 		};
 		rotationDetector = new RotationGestureDetector(rotationListener);		
+	}
+	
+	public void rotateImage(int degrees)
+	{
+		if(degrees != getRotationDegrees())
+		{
+			setImageBitmap(getImageBitmap(), degrees);
+			invalidate();
+		}
 	}
 		
 	public PointF getImagePoint()
@@ -204,12 +294,20 @@ public class TouchImageView extends ImageView
 		return new PointF(redundantXSpace,redundantYSpace);
 	}
 
-	public void updateImagePosition(PointF curr, PointF last) {
-		updateImagePosition(curr, last, true);
+	public void updateImagePositionAndTriggerServerUpdate(PointF curr, PointF last) {
+		updateImagePositionAndTriggerServerUpdate(curr, last, true);
 	}	
 	
-	public void updateImagePosition(PointF curr, PointF last, boolean verticalMove) {
+	public void updateImagePositionAndTriggerServerUpdate(PointF curr, PointF last, boolean verticalMove) {
 		
+		updateImagePosition(curr, last, verticalMove);		
+
+		updateVisiblePartDimensions();	
+		
+	}
+
+	protected void updateImagePosition(PointF curr, PointF last,
+			boolean verticalMove) {
 		matrix.getValues(m);
 		float x = m[Matrix.MTRANS_X];
 		float y = m[Matrix.MTRANS_Y];
@@ -248,8 +346,6 @@ public class TouchImageView extends ImageView
 		}
 		
 		matrix.postTranslate(deltaX, deltaY);							
-		
-		updateVisiblePartDimensions();	
 		
 		last.set(curr.x, curr.y);
 		setImageMatrix(matrix);
@@ -300,6 +396,14 @@ public class TouchImageView extends ImageView
 	}
 	
 	protected void updateVisiblePartDimensions() {
+		ImageState imageInfo = getImageCurrentState();
+		
+		listener.setImageAngle(this.rotationDegrees);
+
+		listener.updateVisiblePart(imageInfo.getLeft(), imageInfo.getTop(), imageInfo.getRight(), imageInfo.getBottom(), imageInfo.getHeight(), imageInfo.getWidth());
+	}
+
+	protected ImageState getImageCurrentState() {
 		//get real view that is being showed on screen
 		matrix.getValues(m);
 		float left = m[Matrix.MTRANS_X];
@@ -315,12 +419,15 @@ public class TouchImageView extends ImageView
 		left = (left!=0) ? left/scale : 0;
 		top = (top!=0) ? top/scale : 0;
 		
-		listener.setImageAngle(this.rotationDegrees);
-		
-		//Log.i("NEWVISIBLEPART", left + ":" + top + ":" + right + ":" + bottom);
-		//Log.i("ZOOM", scale + "");
-		//Log.i("IMAGE", this.getDrawable().getBounds().width() + ":" + this.getDrawable().getBounds().height());
-		listener.updateVisiblePart((int)Math.abs(left), (int)Math.abs(top), (int)Math.abs(right), (int)Math.abs(bottom), this.getDrawable().getBounds().height(), this.getDrawable().getBounds().width());
+		ImageState imageInfo = new ImageState();
+		imageInfo.setLeft((int)Math.abs(left));
+		imageInfo.setRight((int)Math.abs(right));
+		imageInfo.setTop((int)Math.abs(top));
+		imageInfo.setBottom((int)Math.abs(bottom));
+		imageInfo.setZoom(scale);
+		imageInfo.setHeight(this.getDrawable().getBounds().height());
+		imageInfo.setWidth(this.getDrawable().getBounds().width());
+		return imageInfo;
 	}
 
 	private class ScaleListener extends
@@ -348,79 +455,84 @@ public class TouchImageView extends ImageView
 			
 			float mScaleFactor = (float) Math.min(
 				Math.max(.95f, detector.getScaleFactor()), 1.05);
-			float origScale = saveScale;
-			saveScale *= mScaleFactor;
-			if (saveScale > maxScale)
-			{
-				saveScale = maxScale;
-				mScaleFactor = maxScale / origScale;
-			}
-			else if (saveScale < minScale)
-			{
-				saveScale = minScale;
-				mScaleFactor = minScale / origScale;
-			}
-			right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-			bottom = height * saveScale - height
-				- (2 * redundantYSpace * saveScale);
-			if (origWidth * saveScale <= width || origHeight * saveScale <= height)
-			{
-				matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
+			scaleByMultiplier((int)detector.getFocusX(), (int)detector.getFocusY(), mScaleFactor);
+			updateVisiblePartDimensions();
+			return true;
+		}		
+	}
+	
+	public void scaleByMultiplier(int focusX, int focusY,
+			float mScaleFactor) {
+		float origScale = saveScale;
+		saveScale *= mScaleFactor;
+		if (saveScale > maxScale)
+		{
+			saveScale = maxScale;
+			mScaleFactor = maxScale / origScale;
+		}
+		else if (saveScale < minScale)
+		{
+			saveScale = minScale;
+			mScaleFactor = minScale / origScale;
+		}
+		right = width * saveScale - width - (2 * redundantXSpace * saveScale);
+		bottom = height * saveScale - height
+			- (2 * redundantYSpace * saveScale);
+		if (origWidth * saveScale <= width || origHeight * saveScale <= height)
+		{
+			matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
 
-				if (mScaleFactor < 1)
-				{
-					matrix.getValues(m);
-					float x = m[Matrix.MTRANS_X];
-					float y = m[Matrix.MTRANS_Y];
-					if (mScaleFactor < 1)
-					{
-						if (Math.round(origWidth * saveScale) < width)
-						{
-							if (y < -bottom)
-							{
-								matrix.postTranslate(0, -(y + bottom));
-							}
-							else if (y > 0)
-							{
-								matrix.postTranslate(0, -y);
-							}
-						}
-						else
-						{
-							if (x < -right)
-							{
-								matrix.postTranslate(-(x + right), 0);
-							}
-							else if (x > 0)
-							{
-								matrix.postTranslate(-x, 0);
-							}
-						}
-					}
-				}
-			}
-			else
+			if (mScaleFactor < 1)
 			{
-				matrix.postScale(mScaleFactor, mScaleFactor, (int)detector.getFocusX(),
-					(int)detector.getFocusY());
-				
 				matrix.getValues(m);
 				float x = m[Matrix.MTRANS_X];
 				float y = m[Matrix.MTRANS_Y];
 				if (mScaleFactor < 1)
 				{
-					if (x < -right)
-						matrix.postTranslate(-(x + right), 0);
-					else if (x > 0)
-						matrix.postTranslate(-x, 0);
-					if (y < -bottom)
-						matrix.postTranslate(0, -(y + bottom));
-					else if (y > 0)
-						matrix.postTranslate(0, -y);
+					if (Math.round(origWidth * saveScale) < width)
+					{
+						if (y < -bottom)
+						{
+							matrix.postTranslate(0, -(y + bottom));
+						}
+						else if (y > 0)
+						{
+							matrix.postTranslate(0, -y);
+						}
+					}
+					else
+					{
+						if (x < -right)
+						{
+							matrix.postTranslate(-(x + right), 0);
+						}
+						else if (x > 0)
+						{
+							matrix.postTranslate(-x, 0);
+						}
+					}
 				}
 			}
-			updateVisiblePartDimensions();
-			return true;
+		}
+		else
+		{
+			matrix.postScale(mScaleFactor, mScaleFactor, focusX,
+				focusY);
+			
+			matrix.getValues(m);
+			float x = m[Matrix.MTRANS_X];
+			float y = m[Matrix.MTRANS_Y];
+			if (mScaleFactor < 1)
+			{
+				if (x < -right)
+					matrix.postTranslate(-(x + right), 0);
+				else if (x > 0)
+					matrix.postTranslate(-x, 0);
+				if (y < -bottom)
+					matrix.postTranslate(0, -(y + bottom));
+				else if (y > 0)
+					matrix.postTranslate(0, -y);
+			}
 		}
 	}
 	
