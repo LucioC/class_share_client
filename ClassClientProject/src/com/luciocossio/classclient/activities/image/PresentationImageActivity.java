@@ -10,6 +10,9 @@ import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 
+import com.luciocossio.classclient.ImagePresentationInfo;
+import com.luciocossio.classclient.PresentationClient;
+import com.luciocossio.classclient.SlidePresentationInfo;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.BaseClientActivity;import com.luciocossio.classclient.activities.CommonVariables;
@@ -30,6 +33,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.PointF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
@@ -73,15 +77,41 @@ public class PresentationImageActivity extends BaseClientActivity {
 		receiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				updateImageState();
+				getPresentationInfoFromServer();
 			}
 		};
 		RegisterForServerUpdates.startServiceForImageUpdate(this, presentationClient);
 	}
 	
-	public void updateImageState()
+	public void getPresentationInfoFromServer()
+	{			
+		final PresentationImageActivity activity = this;
+		final PresentationClient client = this.presentationClient;
+		AsyncTask<String, Void, ImagePresentationInfo> task = new AsyncTask<String, Void, ImagePresentationInfo>()
+		{
+			ImagePresentationInfo result;
+
+			@Override
+			protected ImagePresentationInfo doInBackground(String... params) {						
+				result = client.getImagePresentationInfo();
+				return result;
+			}
+			
+			@Override
+			protected void onPostExecute(ImagePresentationInfo result) {
+				activity.updatePresentationState(result);
+			}
+			
+			@Override
+			protected void onPreExecute() {
+			}
+		};
+		task.execute();
+	}
+	
+	public void updatePresentationState(ImagePresentationInfo presentationInfo)
 	{
-		Log.i("ImageActivity","image state should be updated");
+		Log.i("PresentationImageActivity", "should udpate image state");
 	}
 	
 	@Override

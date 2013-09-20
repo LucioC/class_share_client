@@ -1,6 +1,6 @@
 package com.luciocossio.classclient;
 
-public class PresentationInfo {
+public class SlidePresentationInfo {
 	
     private int slidesNumber;
     private int currentSlide;

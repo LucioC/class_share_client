@@ -3,7 +3,7 @@ package com.luciocossio.classclient.activities.image;
 import java.util.List;
 
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.PresentationInfo;
+import com.luciocossio.classclient.SlidePresentationInfo;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
@@ -44,18 +44,18 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 	{			
 		final PresentationSlidesActivity activity = this;
 		final PresentationClient client = this.client;
-		AsyncTask<String, Void, PresentationInfo> task = new AsyncTask<String, Void, PresentationInfo>()
-		{					
-			PresentationInfo result;
+		AsyncTask<String, Void, SlidePresentationInfo> task = new AsyncTask<String, Void, SlidePresentationInfo>()
+		{
+			SlidePresentationInfo result;
 
 			@Override
-			protected PresentationInfo doInBackground(String... params) {						
-				result = client.getPresentationInfo();
+			protected SlidePresentationInfo doInBackground(String... params) {						
+				result = client.getSlidePresentationInfo();
 				return result;
 			}
 			
 			@Override
-			protected void onPostExecute(PresentationInfo result) {
+			protected void onPostExecute(SlidePresentationInfo result) {
 				activity.updatePresentationState(result);
 			}
 			
@@ -66,7 +66,7 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 		task.execute();
 	}
 	
-	public void updatePresentationState(PresentationInfo presentationInfo)
+	public void updatePresentationState(SlidePresentationInfo presentationInfo)
 	{
 		if(presentationInfo.getSlidesNumber() != 0)
 		{
