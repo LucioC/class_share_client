@@ -62,6 +62,8 @@ public class RESTApacheClient implements RESTJsonClient {
 		HttpGet httpGet = new HttpGet(location);
 		HttpResponse httpResponse;
 
+		setDefaultTimeOut();		
+		
 		httpResponse = client.execute(httpGet);
 
 		InputStream stream = httpResponse.getEntity().getContent();
@@ -80,6 +82,8 @@ public class RESTApacheClient implements RESTJsonClient {
 			return new RESTJsonResponse(400,"{\"message\": \"Bad json entity\"}"); 
 		}
 		httpPost.setEntity(jsonEntity);
+
+		setDefaultTimeOut();		
 		
 		HttpResponse httpResponse;
 		RESTJsonResponse jsonResponse;
@@ -106,6 +110,8 @@ public class RESTApacheClient implements RESTJsonClient {
 		HttpPost httpPost = new HttpPost(location);
 		httpPost.setHeader("Content-Type", fileMimetype);
 		httpPost.setEntity(fileEntity);
+
+		setDefaultTimeOut();				
 		
 		HttpResponse httpResponse;
 		RESTJsonResponse jsonResponse;
@@ -131,6 +137,8 @@ public class RESTApacheClient implements RESTJsonClient {
 		httpPost.setHeader("Content-Type", fileMimetype);
 		httpPost.setEntity(fileEntity);
 		
+		setDefaultTimeOut();		
+		
 		HttpResponse httpResponse;
 		RESTJsonResponse jsonResponse;
 		try {
@@ -149,7 +157,9 @@ public class RESTApacheClient implements RESTJsonClient {
 	@Override
 	public RESTJsonResponse doDelete(String location) {
 		HttpDelete httpDelete = new HttpDelete(location);
-				
+
+		setDefaultTimeOut();		
+		
 		HttpResponse httpResponse;
 		RESTJsonResponse jsonResponse;
 		try {
@@ -171,6 +181,9 @@ public class RESTApacheClient implements RESTJsonClient {
 		HttpPut httpPut = new HttpPut(location);
 		httpPut.setHeader("Content-Type", "application/json");
 		StringEntity jsonEntity;
+		
+		setDefaultTimeOut();		
+				
 		try {
 			jsonEntity = new StringEntity(jsonContent);			
 		} catch (UnsupportedEncodingException e1) {
@@ -191,6 +204,11 @@ public class RESTApacheClient implements RESTJsonClient {
 		} catch (IOException e) {
 			return new RESTJsonResponse(500,"{\"message\": \"" + e.getMessage() + "\"}"); 
 		}
+	}
+
+	protected void setDefaultTimeOut() {
+		HttpConnectionParams.setConnectionTimeout(client.getParams(), 60 * 1000);
+		HttpConnectionParams.setSoTimeout(client.getParams(), 60 * 1000);
 	}
 
 }

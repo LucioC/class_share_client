@@ -33,6 +33,7 @@ public class RegisterForServerUpdates {
 	public static void startServiceForSlidesUpdate(Context context, PresentationClient client)
 	{
 		Intent intent = new Intent(context, HTTPService.class);		
+		
 		context.startService(intent);
 		PresentationAsyncTask task = new PresentationAsyncTask(client, null) {
 
@@ -53,7 +54,7 @@ public class RegisterForServerUpdates {
 	public static void stopService(Context context, PresentationClient client)
 	{
 		Intent intent = new Intent(context, HTTPService.class);
-		context.stopService(intent);
+		//context.stopService(intent);
 		PresentationAsyncTask task = new PresentationAsyncTask(client, null) {
 
 			@Override

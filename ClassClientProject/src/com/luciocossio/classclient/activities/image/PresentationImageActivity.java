@@ -135,7 +135,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 		}
 		else
 		{
-			finish();
+			this.finish();
 		}
 	}
 	

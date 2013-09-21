@@ -115,6 +115,11 @@ public class WebServer extends Thread {
 	public synchronized void stopThread(){
 		isRunning = false;
 	}
+	
+	public boolean isRunning()
+	{
+		return isRunning;
+	}
 
 	public void setNotifyManager(NotificationManager notifyManager) {
 		this.notifyManager = notifyManager;

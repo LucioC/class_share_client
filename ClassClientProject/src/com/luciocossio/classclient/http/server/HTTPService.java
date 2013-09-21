@@ -36,9 +36,11 @@ public class HTTPService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		server.startThread();
-		
+				
+		if(!server.isRunning())
+		{
+			server.startThread();
+		}
 		return START_STICKY;
 	}
 
