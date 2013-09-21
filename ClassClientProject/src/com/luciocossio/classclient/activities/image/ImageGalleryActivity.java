@@ -15,6 +15,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
@@ -87,7 +88,6 @@ public class ImageGalleryActivity extends Activity {
 		};
 
 		registerViewPagerListener();
-		this.getImages();
 	}
 	
 	private void registerViewPagerListener()
@@ -118,7 +118,6 @@ public class ImageGalleryActivity extends Activity {
             }
         });
     }
-
 	
 	public ImagePagerAdapter getImageAdapter()
 	{
@@ -137,8 +136,14 @@ public class ImageGalleryActivity extends Activity {
 		adapter.notifyDataSetChanged();
 	}
 	
-	public void getImages()
+	public void updateStateOfImages()
 	{
+		
+	}
+	
+	public void getImages(boolean updateState)
+	{
+		final boolean shouldUpdateState = updateState;
 		final ImageGalleryActivity gallery = this;
 		AsyncTaskList task = new AsyncTaskList(client, dialog, "Carregando slides da apresentação...")
 		{
@@ -148,6 +153,10 @@ public class ImageGalleryActivity extends Activity {
 			{	
 				super.onPostExecute(images);
 				gallery.setImagesUrl(images);
+				if(shouldUpdateState)
+				{
+					updateStateOfImages();
+				}
 			}
 			
 			@Override

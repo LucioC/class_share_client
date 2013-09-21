@@ -5,14 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.image.PresentationImageActivity;
 import com.luciocossio.classclient.activities.image.PresentationSlidesActivity;
 import com.luciocossio.classclient.async.AsyncTaskList;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
+import com.luciocossio.classclient.helpers.FileExtensionHelper;
+import com.luciocossio.classclient.model.GeneralPresentationState;
+import com.luciocossio.classclient.model.ImagePresentationInfo;
+import com.luciocossio.classclient.model.SlidePresentationInfo;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.Activity;
@@ -26,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -34,6 +41,8 @@ import android.widget.AdapterView.OnItemClickListener;
 public class ChooseFileActivity extends PresentationListActivity implements OnSharedPreferenceChangeListener, OnItemClickListener {
 	
 	SharedPreferences prefs;
+	FileExtensionHelper fileHelper = new FileExtensionHelper();
+	ActivitiesInitializer initializer = new ActivitiesInitializer();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +51,7 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);     
 		
 		serverUrl = getServerAddressFromPreferences();
 		if(serverUrl != null)
@@ -50,11 +60,6 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 			this.updateList();
 		}
 	}
-	
-	@Override
-	public void onAttachedToWindow() {
-	    //openOptionsMenu(); 
-	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,7 +70,6 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 	
 	@Override
 	public void onOptionsMenuClosed(Menu menu) {
-		// TODO Auto-generated method stub
 		super.onOptionsMenuClosed(menu);		
 		this.updateList();
 	}
@@ -110,14 +114,8 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 			{
 				if(result.getWasSuccessful())
 				{
-					startPresentationSlidesActivity(thisPanel);
+					initializer.startPresentationSlidesActivity(thisPanel, serverUrl, false);
 				}
-			}
-
-			protected void startPresentationSlidesActivity(final Activity thisPanel) {
-				Intent intent = new Intent(thisPanel, PresentationSlidesActivity.class);	
-				intent.putExtra(CommonVariables.ServerAddress, serverUrl);
-				startActivity(intent);
 			}
 		};
 		task.execute();
@@ -131,7 +129,6 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 			@Override
 			protected ResultMessage executeTask()
 			{
-				//return client.openImage(lastFilename);
 				return new ResultMessage("", true);
 			}
 			
@@ -140,15 +137,13 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 			{
 				if(result.getWasSuccessful())
 				{
-					Intent intent = new Intent(thisPanel, PresentationImageActivity.class);	
-					intent.putExtra(CommonVariables.ServerAddress, serverUrl);
-					intent.putExtra(CommonVariables.FileName, lastFilename);
-					startActivity(intent);
+					initializer.startImagePresentationActivity(thisPanel, serverUrl, lastFilename, false);
 				}
 			}
 		};
 		task.execute();
 	}
+
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
@@ -164,7 +159,7 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 	@Override
 	protected void setListListener() {
 		ListView listView = (ListView)findViewById(R.id.files);
-		listView.setOnItemClickListener(this);		
+		listView.setOnItemClickListener(this);
 	}
 
 	public void updateList() {		
@@ -177,6 +172,12 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 			protected void onPostExecute(List<String> files)
 			{	
 				super.onPostExecute(files);
+				
+				if(files == null || files.size() == 0)
+				{
+					files = new ArrayList<String>();
+					files.add("Server not reachable");
+				}
 				
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, 
 			            android.R.layout.simple_list_item_1);
@@ -208,48 +209,18 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 		String selectedFromList = (String) (list.getItemAtPosition(arg2));
 		lastFilename = selectedFromList;
 		
-		String fileExtension = GetFileExt(lastFilename);
+		String fileExtension = fileHelper.getFileExt(lastFilename);
 		
-		if(isPowerPointExtension(fileExtension))			
+		if(fileHelper.isPowerPointExtension(fileExtension))			
 		{
 			startSlidesPresentation(null);
 		}
-		else if(isImageExtension(fileExtension))
+		else if(fileHelper.isImageExtension(fileExtension))
 		{
 			startImagePresentation(null);
 		}
 	}
 	
-	public boolean isImageExtension(String extension)
-	{
-		boolean isImage = false;
-		
-		if(extension.equals("jpg") || extension.equals("png") || extension.equals("jpeg"))
-		{
-			return true;
-		}
-		
-		return isImage;	
-	}	
-
-	public boolean isPowerPointExtension(String extension)
-	{
-		boolean isPowerPoint = false;
-		
-		if(extension.equals("ppt") || extension.equals("pptx"))
-		{
-			return true;			
-		}
-		
-		return isPowerPoint;	
-	}
-	
-	public String GetFileExt(String FileName)
-    {       
-         String ext = FileName.substring((FileName.lastIndexOf(".") + 1), FileName.length());
-         return ext;
-    }
-
 	static final int REQUEST_CODE = 1234;
 	static final String CHOOSER_TITLE = "Select a file";
 	public void sendFile(View view) {		
@@ -260,6 +231,51 @@ public class ChooseFileActivity extends PresentationListActivity implements OnSh
 		    } catch (ActivityNotFoundException e) {
 		        // The reason for the existence of aFileChooser
 		    }
+	}
+	
+	public void updateState(View view)
+	{
+		this.updateList();
+		this.verifyIfHasPresentationRunning();	
+	}
+	
+	public void verifyIfHasPresentationRunning()
+	{
+		final PresentationClient client = this.presentationClient;
+		final ChooseFileActivity activity = this;
+		AsyncTask<String, Void, GeneralPresentationState> task = new AsyncTask<String, Void, GeneralPresentationState>()
+				{
+			ImagePresentationInfo imageInfo;
+			SlidePresentationInfo slidesInfo;
+
+			@Override
+			protected GeneralPresentationState doInBackground(String... params) {						
+				imageInfo = client.getImagePresentationInfo();
+				slidesInfo = client.getSlidePresentationInfo();
+				return new GeneralPresentationState(imageInfo, slidesInfo);
+			}
+
+			@Override
+			protected void onPostExecute(GeneralPresentationState presentationState) {
+				
+				if(presentationState.getImageInfo() == null || presentationState.getSlidesInfo() == null) return;
+				
+				//If returns an file name has an image running
+				if(presentationState.getImageInfo().getFileName() != null && !presentationState.getImageInfo().getFileName().equals(""))
+				{
+					initializer.startImagePresentationActivity(activity, serverUrl, presentationState.getImageInfo().getFileName(), true);
+				}
+				else if(presentationState.getSlidesInfo().getFileName() != null && !presentationState.getSlidesInfo().getFileName().equals(""))
+				{
+					initializer.startPresentationSlidesActivity(activity, serverUrl, true);
+				}
+			}
+
+			@Override
+			protected void onPreExecute() {
+			}
+		};
+		task.execute();
 	}
 	
 	@Override

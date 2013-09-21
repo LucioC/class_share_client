@@ -10,9 +10,7 @@ import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 
-import com.luciocossio.classclient.ImagePresentationInfo;
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.SlidePresentationInfo;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
 import com.luciocossio.classclient.activities.BaseClientActivity;import com.luciocossio.classclient.activities.CommonVariables;
@@ -23,6 +21,8 @@ import com.luciocossio.classclient.http.server.RegisterForServerUpdates;
 import com.luciocossio.classclient.http.server.HTTPService;
 import com.luciocossio.classclient.listeners.impl.FlingTouchImageListener;
 import com.luciocossio.classclient.listeners.impl.ImageMoveZoomPanConnector;
+import com.luciocossio.classclient.model.ImagePresentationInfo;
+import com.luciocossio.classclient.model.SlidePresentationInfo;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -51,8 +51,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 	private GestureDetectorCompat simpleGesturesDetector; 
 	
 	protected String imageName = "";
-	
-	protected boolean hasStarted = false;
+	protected boolean runningState = false;
 	
 	FlingTouchImageListener flingListener;
 		
@@ -67,12 +66,22 @@ public class PresentationImageActivity extends BaseClientActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         
 		Intent intent = getIntent();		
-		imageName = intent.getStringExtra(CommonVariables.FileName);		
-		
+		imageName = intent.getStringExtra(CommonVariables.FileName);	
+		runningState = intent.getBooleanExtra(CommonVariables.RunningState, runningState);		
+				
 		registerTouchListener();
+		
 		flingListener.setImageName(imageName);
 		
-		this.getImage();
+		if(runningState)
+		{
+			flingListener.setPresentationStarted(true);
+			this.getImage(true);
+		}
+		else
+		{
+			this.getImage(false);
+		}
 		
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -87,6 +96,14 @@ public class PresentationImageActivity extends BaseClientActivity {
 	{			
 		final PresentationImageActivity activity = this;
 		final PresentationClient client = this.presentationClient;
+		AsyncTask<String, Void, ImagePresentationInfo> task = createTaskPresentationInfo(
+				activity, client);
+		task.execute();
+	}
+
+	protected AsyncTask<String, Void, ImagePresentationInfo> createTaskPresentationInfo(
+			final PresentationImageActivity activity,
+			final PresentationClient client) {
 		AsyncTask<String, Void, ImagePresentationInfo> task = new AsyncTask<String, Void, ImagePresentationInfo>()
 		{
 			ImagePresentationInfo result;
@@ -106,13 +123,20 @@ public class PresentationImageActivity extends BaseClientActivity {
 			protected void onPreExecute() {
 			}
 		};
-		task.execute();
+		return task;
 	}
 	
 	public void updatePresentationState(ImagePresentationInfo presentationInfo)
 	{
 		Log.i("PresentationImageActivity", "should udpate image state");
-		getImageView().updateImageState(presentationInfo);
+		if(!presentationInfo.getFileName().equals(""))
+		{
+			getImageView().updateImageState(presentationInfo);
+		}
+		else
+		{
+			finish();
+		}
 	}
 	
 	@Override
@@ -207,8 +231,9 @@ public class PresentationImageActivity extends BaseClientActivity {
 		return imageView;
 	}
 	
-	public void getImage()
+	public void getImage(boolean updateState)
 	{
+		final boolean shouldUpdateState = updateState;
 		final PresentationImageActivity activity = this;
 		AsyncTaskList task = new AsyncTaskList(presentationClient, dialog, "Carregando imagem...")
 		{			
@@ -234,6 +259,11 @@ public class PresentationImageActivity extends BaseClientActivity {
 				
 				imageView.setImageBitmap(bitmap);
 				imageView.setMaxZoom(15f);
+				
+				if(shouldUpdateState)
+				{
+					getPresentationInfoFromServer();
+				}
 			}
 
 			@Override

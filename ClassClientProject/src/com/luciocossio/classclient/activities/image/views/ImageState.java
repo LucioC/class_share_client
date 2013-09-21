@@ -1,6 +1,6 @@
 package com.luciocossio.classclient.activities.image.views;
 
-import com.luciocossio.classclient.ImagePresentationInfo;
+import com.luciocossio.classclient.model.ImagePresentationInfo;
 
 public class ImageState extends ImagePresentationInfo {
 	private float zoom;

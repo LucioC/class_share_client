@@ -15,7 +15,15 @@
                 android:layout_height="match_parent"
                 android:text="@string/send_button"
                 android:onClick="sendFile"  
-                android:layout_weight="3" />
+                android:layout_weight="4" />
+            
+            <Button
+                android:id="@+id/synchronize"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/button_synchronize"
+                android:onClick="updateState"  
+                android:layout_weight="4" />
             
             <ListView
                 android:id="@+id/files"

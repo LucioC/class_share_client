@@ -16,6 +16,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 
 public class RESTApacheClient implements RESTJsonClient {
@@ -34,6 +35,10 @@ public class RESTApacheClient implements RESTJsonClient {
 			Map<String, String> queryParameters) {
 		
 		String newUrl = httpUtils.addQueryParametersToUrl(location, queryParameters);
+		
+		//Set a timeout of 2 seconds
+		HttpConnectionParams.setConnectionTimeout(client.getParams(), 2 * 1000);
+		HttpConnectionParams.setSoTimeout(client.getParams(), 2 * 1000);
 		
 		HttpGet httpGet = new HttpGet(newUrl);
 		HttpResponse httpResponse;

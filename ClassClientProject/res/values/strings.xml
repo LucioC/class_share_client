@@ -31,5 +31,6 @@
     <string name="summaryServer">Put the server IP</string>
     <string name="serverPort">Port</string>
     <string name="summaryServerPort">Put the server port</string>
+    <string name="button_synchronize">Synchronize</string>
 
 </resources>

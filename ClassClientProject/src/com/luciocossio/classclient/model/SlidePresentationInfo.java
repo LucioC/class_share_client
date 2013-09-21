@@ -1,4 +1,4 @@
-package com.luciocossio.classclient;
+package com.luciocossio.classclient.model;
 
 public class SlidePresentationInfo {
 	

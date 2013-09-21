@@ -1,7 +1,7 @@
 package com.luciocossio.classclient.activities.image.views;
 
-import com.luciocossio.classclient.ImagePresentationInfo;
 import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
+import com.luciocossio.classclient.model.ImagePresentationInfo;
 import com.luciocossio.gestures.detectors.RotationGestureDetector;
 import com.luciocossio.gestures.listeners.RotationListener;
 

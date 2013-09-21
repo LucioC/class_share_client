@@ -11,6 +11,8 @@ import org.apache.http.client.ClientProtocolException;
 
 import com.google.gson.Gson;
 import com.luciocossio.classclient.http.RESTJsonClient;
+import com.luciocossio.classclient.model.ImagePresentationInfo;
+import com.luciocossio.classclient.model.SlidePresentationInfo;
 
 public class PresentationClient extends ClassClientHTTPCommon {
 				

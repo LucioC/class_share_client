@@ -1,14 +1,13 @@
 package com.luciocossio.classclient.activities.image;
 
-import java.util.List;
-
 import com.luciocossio.classclient.PresentationClient;
-import com.luciocossio.classclient.SlidePresentationInfo;
 import com.luciocossio.classclient.R;
 import com.luciocossio.classclient.ResultMessage;
+import com.luciocossio.classclient.activities.CommonVariables;
 import com.luciocossio.classclient.async.PresentationAsyncTask;
 import com.luciocossio.classclient.http.server.RegisterForServerUpdates;
 import com.luciocossio.classclient.http.server.HTTPService;
+import com.luciocossio.classclient.model.SlidePresentationInfo;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -18,7 +17,6 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,10 +24,28 @@ import android.view.WindowManager;
 
 public class PresentationSlidesActivity extends ImageGalleryActivity {
 		
+	protected boolean runningState = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);        
+
+        Intent intent = getIntent();
+		runningState = intent.getBooleanExtra(CommonVariables.RunningState, runningState);	
+		
+		if(runningState)
+		{
+			this.flingListener.setPresentationStarted(true);
+			this.pageListener.setCallServer(true);
+			AsyncTask<String, Void, SlidePresentationInfo> task = createTaskPresentationInfo(
+					this, client);
+			this.getImages(true);
+		}
+		else			
+		{
+			this.getImages(false);
+		}
         
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -40,10 +56,24 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 		RegisterForServerUpdates.startServiceForSlidesUpdate(this, client);
 	}
 	
+	@Override
+	public void updateStateOfImages()
+	{
+		getPresentationInfoFromServer();
+	}
+	
 	public void getPresentationInfoFromServer()
 	{			
 		final PresentationSlidesActivity activity = this;
 		final PresentationClient client = this.client;
+		AsyncTask<String, Void, SlidePresentationInfo> task = createTaskPresentationInfo(
+				activity, client);
+		task.execute();
+	}
+
+	protected AsyncTask<String, Void, SlidePresentationInfo> createTaskPresentationInfo(
+			final PresentationSlidesActivity activity,
+			final PresentationClient client) {
 		AsyncTask<String, Void, SlidePresentationInfo> task = new AsyncTask<String, Void, SlidePresentationInfo>()
 		{
 			SlidePresentationInfo result;
@@ -63,18 +93,22 @@ public class PresentationSlidesActivity extends ImageGalleryActivity {
 			protected void onPreExecute() {
 			}
 		};
-		task.execute();
+		return task;
 	}
 	
 	public void updatePresentationState(SlidePresentationInfo presentationInfo)
 	{
-		if(presentationInfo.getSlidesNumber() != 0)
+		if(!presentationInfo.getFileName().equals(""))
 		{
 			if(viewPager.getCurrentItem() != presentationInfo.getCurrentSlide()-1)
 			{
 				pageListener.setToIgnoreNextPageChange();
 				viewPager.setCurrentItem(presentationInfo.getCurrentSlide()-1);
 			}
+		}
+		else
+		{
+			finish();
 		}
 	}
 	
