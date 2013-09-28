@@ -2,9 +2,9 @@ package com.luciocossio.classclient.listeners.impl;
 
 import com.luciocossio.classclient.PresentationClient;
 import com.luciocossio.classclient.async.AsyncSilentTask;
-import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
+import com.luciocossio.classclient.listeners.ImageStateConnector;
 
-public class ImageMoveZoomPanConnector implements ImageMoveZoomPanListener {
+public class ImageMoveZoomPanConnector implements ImageStateConnector {
 	
 	long lastTime = 0;
 	long minimumIntervalMillis = 10;

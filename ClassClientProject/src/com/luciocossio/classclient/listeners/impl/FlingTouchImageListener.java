@@ -49,6 +49,12 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 		return true;
 	}
 
+	@Override
+	public boolean onDoubleTap(MotionEvent e) {
+		this.imageView.resetZoom();
+		return true;
+	}
+	
 	public void startPresentation(PresentationClient client, ProgressDialog dialog)
     {
     	PresentationAsyncTask task = new PresentationAsyncTask(client, dialog)

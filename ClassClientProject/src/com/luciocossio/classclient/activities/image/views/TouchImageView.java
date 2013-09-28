@@ -1,6 +1,6 @@
 package com.luciocossio.classclient.activities.image.views;
 
-import com.luciocossio.classclient.listeners.ImageMoveZoomPanListener;
+import com.luciocossio.classclient.listeners.ImageStateConnector;
 import com.luciocossio.classclient.model.ImagePresentationInfo;
 import com.luciocossio.gestures.detectors.RotationGestureDetector;
 import com.luciocossio.gestures.listeners.RotationListener;
@@ -15,6 +15,7 @@ import android.provider.MediaStore.Images;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -55,11 +56,11 @@ public class TouchImageView extends ImageView
 	
 	private RotationGestureDetector rotationDetector;
 	private RotationListener rotationListener;
-
+	
 	Context context;
 	
 	ScaleListener scaleListener = null;
-	ImageMoveZoomPanListener listener = null;
+	ImageStateConnector connector = null;
 	
 	public TouchImageView(Context context)
 	{
@@ -78,7 +79,7 @@ public class TouchImageView extends ImageView
 		super.setClickable(true);
 		this.context = context;
 		scaleListener = new ScaleListener();
-		scaleListener.setImageListener(listener);
+		scaleListener.setImageEventsConnection(connector);
 		mScaleDetector = new ScaleGestureDetector(context, scaleListener);
 		matrix.setTranslate(1f, 1f);
 		m = new float[9];
@@ -215,8 +216,6 @@ public class TouchImageView extends ImageView
 				invalidate();
 				return true; // indicate event was handled
 			}
-			
-			
 		});
 	}
 	
@@ -351,10 +350,10 @@ public class TouchImageView extends ImageView
 		setImageMatrix(matrix);
 	}			
 	
-	public void setListener(ImageMoveZoomPanListener newListener)
+	public void setListener(ImageStateConnector newListener)
 	{
-		this.listener = newListener;		
-		scaleListener.setImageListener(listener);
+		this.connector = newListener;		
+		scaleListener.setImageEventsConnection(connector);
 	}
 	
 	public Bitmap getImageBitmap()
@@ -392,15 +391,15 @@ public class TouchImageView extends ImageView
 
 	public void setMaxZoom(float x)
 	{
-		maxScale = x;
+		maxScale = x;	
 	}
 	
 	protected void updateVisiblePartDimensions() {
 		ImageState imageInfo = getImageCurrentState();
 		
-		listener.setImageAngle(this.rotationDegrees);
+		connector.setImageAngle(this.rotationDegrees);
 
-		listener.updateVisiblePart(imageInfo.getLeft(), imageInfo.getTop(), imageInfo.getRight(), imageInfo.getBottom(), imageInfo.getHeight(), imageInfo.getWidth());
+		connector.updateVisiblePart(imageInfo.getLeft(), imageInfo.getTop(), imageInfo.getRight(), imageInfo.getBottom(), imageInfo.getHeight(), imageInfo.getWidth());
 	}
 
 	protected ImageState getImageCurrentState() {
@@ -433,11 +432,11 @@ public class TouchImageView extends ImageView
 	private class ScaleListener extends
 		ScaleGestureDetector.SimpleOnScaleGestureListener
 	{
-		ImageMoveZoomPanListener listener;
+		ImageStateConnector connector;
 		
-		public void setImageListener(ImageMoveZoomPanListener listener)
+		public void setImageEventsConnection(ImageStateConnector listener)
 		{
-			this.listener = listener;
+			this.connector = listener;
 		}
 		
 		@Override
@@ -547,6 +546,11 @@ public class TouchImageView extends ImageView
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		width = MeasureSpec.getSize(widthMeasureSpec);
 		height = MeasureSpec.getSize(heightMeasureSpec);
+		resizeAndCentralize();
+	}
+	
+	public void resetZoom()
+	{
 		resizeAndCentralize();
 	}
 
