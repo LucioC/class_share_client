@@ -129,6 +129,7 @@ public class PresentationImageActivity extends BaseClientActivity {
 	public void updatePresentationState(ImagePresentationInfo presentationInfo)
 	{
 		Log.i("PresentationImageActivity", "should udpate image state");
+		if(presentationInfo.getFileName() != null)
 		if(!presentationInfo.getFileName().equals(""))
 		{
 			getImageView().updateImageState(presentationInfo);

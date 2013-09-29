@@ -143,7 +143,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 	{
 		String url = serverUrl + IMAGE_COMMAND;
 
-		return doPut(url,"{\"command\":\"close\"}");
+		return doPut(url,"{\"command\":\"closeimage\"}");
 	}	
 	
 	public ResultMessage rotateImageRight()

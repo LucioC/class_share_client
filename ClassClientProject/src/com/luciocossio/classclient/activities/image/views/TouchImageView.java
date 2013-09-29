@@ -104,7 +104,7 @@ public class TouchImageView extends ImageView
 				
 		//set rotation
 		newState.setRotation(imageInfo.getRotation());
-		recreateWithRotation(newState.getRotation());
+		recreateWithRotation(newState.getRotation(), false);
 		
 		int x = 0;
 		int y = 0;
@@ -255,7 +255,6 @@ public class TouchImageView extends ImageView
 				if(mode == ROTATION)
 				{
 					imageView.addRotation(-angleChange*4);
-					Log.i("ROTATIONCHANGED", "angle changed: " + accumulatedAngle*4);
 				}
 
 				return super.onRotation(angleChange, distanceChange);				
@@ -273,7 +272,7 @@ public class TouchImageView extends ImageView
 				normalizedAngleChange -= leftOver;
 				if(leftOver > 45f) normalizedAngleChange += 90;
 				
-				imageView.recreateWithRotation(imageView.getRotationDegrees() - (int)normalizedAngleChange);							
+				imageView.recreateWithRotation(imageView.getRotationDegrees() - (int)normalizedAngleChange, true);							
 			}	
 		};
 		rotationDetector = new RotationGestureDetector(rotationListener);		
@@ -303,11 +302,11 @@ public class TouchImageView extends ImageView
 		
 	private boolean rotated = false;
 	
-	public void recreateWithRotation(int degrees)
+	public void recreateWithRotation(int degrees, boolean shouldUpdateServer)
 	{
 		if(degrees != getRotationDegrees())
 		{
-			rotated = true;
+			rotated = shouldUpdateServer;
 			setImageBitmap(getImageBitmap(), degrees);
 			invalidate();
 		}
@@ -331,6 +330,8 @@ public class TouchImageView extends ImageView
 	}	
 	
 	public void updateImagePositionAndTriggerServerUpdate(PointF curr, PointF last, boolean verticalMove) {
+		
+		if(mode != DRAG) return;
 		
 		updateImagePosition(curr, last, verticalMove);		
 

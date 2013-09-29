@@ -26,6 +26,8 @@ public class FlingTouchImageListener extends FlingTouchPresentationListener {
 	
 	public void updatePositionY(PointF last, PointF current)
 	{
+		if(last == null || current == null) return;
+		
 		float localDistanceY = last.y - current.y;
 
 		if(Math.abs(imageView.getImagePoint().y-localDistanceY-imageView.getImageCenterPoint().y) < scrollBoundary)
