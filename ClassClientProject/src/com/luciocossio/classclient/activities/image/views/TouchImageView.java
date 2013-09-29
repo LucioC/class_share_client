@@ -8,6 +8,7 @@ import com.luciocossio.gestures.listeners.RotationListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -47,10 +48,10 @@ public class TouchImageView extends ImageView
 
 	float redundantXSpace, redundantYSpace;
 
-	float width, height;
+	float screenWidth, screenHeight;
 	static final int CLICK = 3;
 	float saveScale = 1f;
-	float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
+	float right, bottom, origWidth, origHeight, bitmapWidth, bitmapHeight;
 	
 	ScaleGestureDetector mScaleDetector;
 	
@@ -98,12 +99,12 @@ public class TouchImageView extends ImageView
 		int imageWidthToShow = imageInfo.getRight() - imageInfo.getLeft();		
 		int imageHeightToShow = imageInfo.getBottom() - imageInfo.getTop();
 		
-		float heightMultiplier = (float)getHeight() / imageHeightToShow;
-		float widthMultiplier = (float)getWidth() / imageWidthToShow;
+		float heightMultiplier = (float)screenHeight / imageHeightToShow;
+		float widthMultiplier = (float)screenWidth / imageWidthToShow;
 				
 		//set rotation
 		newState.setRotation(imageInfo.getRotation());
-		rotateImage(newState.getRotation());
+		recreateWithRotation(newState.getRotation());
 		
 		int x = 0;
 		int y = 0;
@@ -115,7 +116,7 @@ public class TouchImageView extends ImageView
 			newState.setTop((int)(imageInfo.getTop()*zoom));
 			newState.setBottom((int)(imageInfo.getBottom()*zoom));
 
-			int screenWidth = getWidth();
+			int screenWidth = (int)this.screenWidth;
 			int imageScaledWidthToShow = (int)(imageWidthToShow*zoom);
 			int widthExcess = (int)(screenWidth - imageScaledWidthToShow);
 			newState.setLeft((int)(imageInfo.getLeft()*zoom));
@@ -140,7 +141,7 @@ public class TouchImageView extends ImageView
 			newState.setLeft((int)(imageInfo.getLeft()*zoom));
 			newState.setRight((int)(imageInfo.getRight()*zoom));
 
-			int screenHeight = getHeight();
+			int screenHeight = (int)this.screenHeight;
 			int imageScaledHeightToShow = (int)(imageHeightToShow*zoom);
 			int heightExcess = (int)(screenHeight - imageScaledHeightToShow);			
 			newState.setTop((int)(imageInfo.getTop()*zoom));
@@ -160,10 +161,17 @@ public class TouchImageView extends ImageView
 		}
 
 		float scaleFactor = newState.getZoom() / currentState.getZoom();
-		scaleByMultiplier((int)width / 2, (int)height / 2, scaleFactor);
+		scaleByMultiplier((int)screenWidth / 2, (int)screenHeight / 2, scaleFactor);
 		updateImagePosition(new PointF(x, y), getImagePoint(), true);
 		
 		invalidate();
+	}
+	
+	public void addRotation(float rotation)
+	{
+		//matrix = this.getImageMatrix();
+		matrix.postRotate(rotation, (int)screenWidth / 2, (int)screenHeight / 2);
+		setImageMatrix(matrix);
 	}
 	
 	public void registerListener(GestureDetectorCompat newDetector)
@@ -191,7 +199,7 @@ public class TouchImageView extends ImageView
 						mode = DRAG;
 						break;
 					case MotionEvent.ACTION_MOVE:
-						if (mode == DRAG)
+						if (mode == DRAG && getImageScale() > 1)
 						{
 							updateImagePositionAndTriggerServerUpdate(curr, last, false);
 						}
@@ -222,7 +230,7 @@ public class TouchImageView extends ImageView
 	protected void createRotationDetector()
 	{
 		final TouchImageView imageView = this;
-		final int minimumAngle = 12;
+		final int minimumAngle = 15;
 		rotationListener = new RotationListener(minimumAngle)
 		{
 			private boolean rotated = false;
@@ -243,38 +251,63 @@ public class TouchImageView extends ImageView
 				{
 					mode = ROTATION;
 				}
-				
+
+				if(mode == ROTATION)
+				{
+					imageView.addRotation(-angleChange*4);
+					Log.i("ROTATIONCHANGED", "angle changed: " + accumulatedAngle*4);
+				}
+
 				return super.onRotation(angleChange, distanceChange);				
 			}
 			
 			@Override
-			protected void rotationChange(float angleChange,
+			protected void minimumRotationEvent(float angleChange,
 					float accumulatedAngle, float lastAngle) {
 				
-				if(rotated) return;
+				float normalizedAngleChange = angleChange*4;
+				while(normalizedAngleChange > 360) normalizedAngleChange -= 360;
+				while(normalizedAngleChange < 0) normalizedAngleChange += 360;
 				
-				if(angleChange >= minimumAngle)
-				{
-					imageView.rotateImage(imageView.getRotationDegrees() - 90);
-					rotated = true;
-				}
-				else if(angleChange <= -minimumAngle)
-				{
-					imageView.rotateImage(imageView.getRotationDegrees() + 90);
-					rotated = true;
-				}
+				float leftOver = normalizedAngleChange % 90;
+				normalizedAngleChange -= leftOver;
+				if(leftOver > 45f) normalizedAngleChange += 90;
 				
-				if(rotated)
-				imageView.updateVisiblePartDimensions();
-			}			
+				imageView.recreateWithRotation(imageView.getRotationDegrees() - (int)normalizedAngleChange);							
+			}	
 		};
 		rotationDetector = new RotationGestureDetector(rotationListener);		
 	}
 	
-	public void rotateImage(int degrees)
+	@Override
+	protected void onDraw(Canvas canvas) {
+		// TODO Auto-generated method stub
+		super.onDraw(canvas);
+		
+		if(rotated)
+		{
+			connector.setImageAngle(this.rotationDegrees);
+			
+			if(rotationDegrees == 90 || rotationDegrees == 270)
+			{
+				connector.updateVisiblePart(0, 0, imageBitmap.getHeight(), imageBitmap.getWidth(), imageBitmap.getWidth(), imageBitmap.getHeight());
+			}
+			else
+			{
+				connector.updateVisiblePart(0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), imageBitmap.getHeight(), imageBitmap.getWidth());
+			}
+			
+			rotated = false;
+		}
+	}
+		
+	private boolean rotated = false;
+	
+	public void recreateWithRotation(int degrees)
 	{
 		if(degrees != getRotationDegrees())
 		{
+			rotated = true;
 			setImageBitmap(getImageBitmap(), degrees);
 			invalidate();
 		}
@@ -314,7 +347,7 @@ public class TouchImageView extends ImageView
 		float deltaY = curr.y - last.y;
 		float scaleWidth = Math.round(origWidth * saveScale);
 		float scaleHeight = Math.round(origHeight * saveScale);
-		if (scaleWidth < width)
+		if (scaleWidth < screenWidth)
 		{
 			deltaX = 0;
 			if (y + deltaY > 0)
@@ -322,7 +355,7 @@ public class TouchImageView extends ImageView
 			else if (y + deltaY < -bottom)
 				deltaY = -(y + bottom);
 		}
-		else if (scaleHeight < height)
+		else if (scaleHeight < screenHeight)
 		{
 			if(!verticalMove)
 				deltaY = 0;
@@ -370,8 +403,8 @@ public class TouchImageView extends ImageView
 		super.setImageBitmap(bm);
 		if (bm != null)
 		{
-			bmWidth = bm.getWidth();
-			bmHeight = bm.getHeight();
+			bitmapWidth = bm.getWidth();
+			bitmapHeight = bm.getHeight();
 		}
 	}
 	
@@ -379,14 +412,22 @@ public class TouchImageView extends ImageView
 
 	public void setImageBitmap(Bitmap bm, int degrees)
 	{
-		this.rotationDegrees = degrees;
+		setRotationDegrees(degrees);
 		bm = copyBitmapWithRotation(bm, degrees);
 		super.setImageBitmap(bm);
 		if (bm != null)
 		{
-			bmWidth = bm.getWidth();
-			bmHeight = bm.getHeight();
+			bitmapWidth = bm.getWidth();
+			bitmapHeight = bm.getHeight();
 		}
+	}
+	
+	public void setRotationDegrees(int degrees)
+	{
+		this.rotationDegrees = degrees;
+		
+		if(rotationDegrees > 360) rotationDegrees -= 360;
+		if(rotationDegrees < 0) rotationDegrees += 360;
 	}
 
 	public void setMaxZoom(float x)
@@ -395,6 +436,9 @@ public class TouchImageView extends ImageView
 	}
 	
 	protected void updateVisiblePartDimensions() {
+		
+		if( getDrawable() == null ) return;
+		
 		ImageState imageInfo = getImageCurrentState();
 		
 		connector.setImageAngle(this.rotationDegrees);
@@ -402,18 +446,18 @@ public class TouchImageView extends ImageView
 		connector.updateVisiblePart(imageInfo.getLeft(), imageInfo.getTop(), imageInfo.getRight(), imageInfo.getBottom(), imageInfo.getHeight(), imageInfo.getWidth());
 	}
 
-	protected ImageState getImageCurrentState() {
+	public ImageState getImageCurrentState() {
 		//get real view that is being showed on screen
 		matrix.getValues(m);
 		float left = m[Matrix.MTRANS_X];
 		float top = m[Matrix.MTRANS_Y];
 		if(top > 0) top = 0;
 		float scale = m[Matrix.MSCALE_X];
-		float right = -left + getWidth();
+		float right = -left + screenWidth;
 		right = (right!=0) ? right/scale : 0;
-		float bottom = -top + getHeight();
+		float bottom = -top + screenHeight;
 		bottom = (bottom!=0) ? bottom/scale : 0;	
-		if(bottom > bmHeight) bottom = bmHeight;
+		if(bottom > bitmapHeight) bottom = bitmapHeight;
 
 		left = (left!=0) ? left/scale : 0;
 		top = (top!=0) ? top/scale : 0;
@@ -474,12 +518,12 @@ public class TouchImageView extends ImageView
 			saveScale = minScale;
 			mScaleFactor = minScale / origScale;
 		}
-		right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-		bottom = height * saveScale - height
+		right = screenWidth * saveScale - screenWidth - (2 * redundantXSpace * saveScale);
+		bottom = screenHeight * saveScale - screenHeight
 			- (2 * redundantYSpace * saveScale);
-		if (origWidth * saveScale <= width || origHeight * saveScale <= height)
+		if (origWidth * saveScale <= screenWidth || origHeight * saveScale <= screenHeight)
 		{
-			matrix.postScale(mScaleFactor, mScaleFactor, width / 2, height / 2);
+			matrix.postScale(mScaleFactor, mScaleFactor, screenWidth / 2, screenHeight / 2);
 
 			if (mScaleFactor < 1)
 			{
@@ -488,7 +532,7 @@ public class TouchImageView extends ImageView
 				float y = m[Matrix.MTRANS_Y];
 				if (mScaleFactor < 1)
 				{
-					if (Math.round(origWidth * saveScale) < width)
+					if (Math.round(origWidth * saveScale) < screenWidth)
 					{
 						if (y < -bottom)
 						{
@@ -544,8 +588,8 @@ public class TouchImageView extends ImageView
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		width = MeasureSpec.getSize(widthMeasureSpec);
-		height = MeasureSpec.getSize(heightMeasureSpec);
+		screenWidth = MeasureSpec.getSize(widthMeasureSpec);
+		screenHeight = MeasureSpec.getSize(heightMeasureSpec);
 		resizeAndCentralize();
 	}
 	
@@ -557,25 +601,25 @@ public class TouchImageView extends ImageView
 	protected void resizeAndCentralize() {
 		// Fit to screen.
 		float scale;
-		float scaleX = (float) width / (float) bmWidth;
-		float scaleY = (float) height / (float) bmHeight;
+		float scaleX = (float) screenWidth / (float) bitmapWidth;
+		float scaleY = (float) screenHeight / (float) bitmapHeight;
 		scale = Math.min(scaleX, scaleY);
 		matrix.setScale(scale, scale);
 		setImageMatrix(matrix);
 		saveScale = 1f;
 
 		// Center the image
-		redundantYSpace = (float) height - (scale * (float) bmHeight);
-		redundantXSpace = (float) width - (scale * (float) bmWidth);
+		redundantYSpace = (float) screenHeight - (scale * (float) bitmapHeight);
+		redundantXSpace = (float) screenWidth - (scale * (float) bitmapWidth);
 		redundantYSpace /= (float) 2;
 		redundantXSpace /= (float) 2;
 
 		matrix.postTranslate(redundantXSpace, redundantYSpace);
 
-		origWidth = width - 2 * redundantXSpace;
-		origHeight = height - 2 * redundantYSpace;
-		right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-		bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
+		origWidth = screenWidth - 2 * redundantXSpace;
+		origHeight = screenHeight - 2 * redundantYSpace;
+		right = screenWidth * saveScale - screenWidth - (2 * redundantXSpace * saveScale);
+		bottom = screenHeight * saveScale - screenHeight - (2 * redundantYSpace * saveScale);
 		setImageMatrix(matrix);
 	}
 	

@@ -2,14 +2,16 @@ package com.luciocossio.gestures.listeners;
 
 import android.util.Log;
 
+import com.luciocossio.classclient.activities.image.views.ImageState;
+import com.luciocossio.classclient.activities.image.views.TouchImageView;
 import com.luciocossio.gestures.OnRotationGestureListener;
 
 public class RotationListener implements OnRotationGestureListener {
 
 	private float minimunAngleInterval;
-	private float accumulatedAngle = 0f;
+	protected float accumulatedAngle = 0f;
 	private float lastAngle = 0f;
-	
+
 	public RotationListener(float minimumAngleChange)
 	{
 		this.minimunAngleInterval = minimumAngleChange;
@@ -21,26 +23,30 @@ public class RotationListener implements OnRotationGestureListener {
 		lastAngle = 0;
 		return true;
 	}
-
-	@Override
-	public boolean onRotation(float angleChange, float distanceChange) {
-		
-		if(Math.abs(distanceChange) > Math.abs(angleChange)) return false;
-		
-		accumulatedAngle += angleChange;
-		
+	
+	public boolean onRotationStop()
+	{
 		float difference = accumulatedAngle - lastAngle;		
 		if(Math.abs(difference) >= minimunAngleInterval)
 		{
-			rotationChange(difference, accumulatedAngle, lastAngle);
+			minimumRotationEvent(difference, accumulatedAngle, lastAngle);
 			lastAngle = accumulatedAngle;
 			Log.d("ROTATION", "Accumulated angle " + accumulatedAngle);
 		}
+		return true;
+	}
+	
+	@Override
+	public boolean onRotation(float angleChange, float distanceChange) {
+		
+		//if(Math.abs(distanceChange) > Math.abs(angleChange)) return false;
+		
+		accumulatedAngle += angleChange;		
 		
 		return true;
 	}
 	
-	protected void rotationChange(float angleChange, float accumulatedAngle, float lastAngle)
+	protected void minimumRotationEvent(float angleChange, float accumulatedAngle, float lastAngle)
 	{
 	
 	}

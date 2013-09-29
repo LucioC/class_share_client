@@ -15,6 +15,7 @@ public class RotationGestureDetector {
 	
 	private float angleChange;
 	private boolean firstTouch;
+	private boolean active = false;
 
 	private OnRotationGestureListener listener;
 
@@ -52,6 +53,7 @@ public class RotationGestureDetector {
 				if (firstTouch) {
 					angleChange = 0;
 					firstTouch = false;
+					active = true;
 					listener.onRotationStart();
 				} else {
 					angleChange = angleBetweenLines(finger1, finger2, newFinger1, newFinger2);
@@ -70,9 +72,13 @@ public class RotationGestureDetector {
 			break;
 		case MotionEvent.ACTION_UP:
 			ptrID1 = INVALID_POINTER_ID;
+			if(active) listener.onRotationStop();
+			active = false;
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 			ptrID2 = INVALID_POINTER_ID;
+			if(active) listener.onRotationStop();
+			active = false;
 			break;
 		}
 		return true;

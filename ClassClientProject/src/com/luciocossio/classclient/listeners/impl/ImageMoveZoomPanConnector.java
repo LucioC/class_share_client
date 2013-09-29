@@ -41,7 +41,7 @@ public class ImageMoveZoomPanConnector implements ImageStateConnector {
 		
 		if(System.currentTimeMillis() > lastTime + minimumIntervalMillis)
 		if(Math.abs(dleft) >= minimumMoveInterval || Math.abs(dright) >= minimumMoveInterval 
-				|| Math.abs(dtop) >= minimumMoveInterval || Math.abs(dbottom) >= minimumMoveInterval)
+				|| Math.abs(dtop) >= minimumMoveInterval || Math.abs(dbottom) >= minimumMoveInterval || angleChanged)
 		{
 			this.left = left;
 			this.top = top;
@@ -65,14 +65,19 @@ public class ImageMoveZoomPanConnector implements ImageStateConnector {
 			};
 			task.execute();
 		}
+		angleChanged = false;
 	}
 
 	public int getImageAngle() {
 		return imageAngle;
 	}
 
+	boolean angleChanged = false;
 	public void setImageAngle(int imageAngle) {
+		if(this.imageAngle != imageAngle) 
+		{
+			angleChanged = true;
+		}
 		this.imageAngle = imageAngle;
 	}
-
 }
