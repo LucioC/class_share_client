@@ -232,12 +232,9 @@ public class TouchImageView extends ImageView
 		final TouchImageView imageView = this;
 		final int minimumAngle = 15;
 		rotationListener = new RotationListener(minimumAngle)
-		{
-			private boolean rotated = false;
-			
+		{			
 			@Override
 			public boolean onRotationStart() {
-				rotated = false;
 				return super.onRotationStart();
 			}
 			
@@ -283,7 +280,7 @@ public class TouchImageView extends ImageView
 		// TODO Auto-generated method stub
 		super.onDraw(canvas);
 		
-		if(rotated)
+		if(rotated || reset)
 		{
 			connector.setImageAngle(this.rotationDegrees);
 			
@@ -297,10 +294,12 @@ public class TouchImageView extends ImageView
 			}
 			
 			rotated = false;
+			reset = false;
 		}
 	}
 		
 	private boolean rotated = false;
+	private boolean reset = false;
 	
 	public void recreateWithRotation(int degrees, boolean shouldUpdateServer)
 	{
@@ -597,6 +596,7 @@ public class TouchImageView extends ImageView
 	public void resetZoom()
 	{
 		resizeAndCentralize();
+		reset = true;
 	}
 
 	protected void resizeAndCentralize() {

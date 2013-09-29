@@ -7,7 +7,7 @@ import com.luciocossio.classclient.listeners.ImageStateConnector;
 public class ImageMoveZoomPanConnector implements ImageStateConnector {
 	
 	long lastTime = 0;
-	long minimumIntervalMillis = 10;
+	long minimumIntervalMillis = 50;
 	
 	protected float dleft = 0;
 	protected float dtop = 0;
@@ -21,7 +21,7 @@ public class ImageMoveZoomPanConnector implements ImageStateConnector {
 	
 	protected int imageAngle = 0;
 	
-	protected int minimumMoveInterval = 25;
+	protected int minimumMoveInterval = 20;
 	
 	PresentationClient client;
 	
@@ -39,7 +39,7 @@ public class ImageMoveZoomPanConnector implements ImageStateConnector {
 		dtop = top - this.top;
 		dbottom = bottom - this.bottom;
 		
-		if(System.currentTimeMillis() > lastTime + minimumIntervalMillis)
+		if(System.currentTimeMillis() > lastTime + minimumIntervalMillis || angleChanged)
 		if(Math.abs(dleft) >= minimumMoveInterval || Math.abs(dright) >= minimumMoveInterval 
 				|| Math.abs(dtop) >= minimumMoveInterval || Math.abs(dbottom) >= minimumMoveInterval || angleChanged)
 		{

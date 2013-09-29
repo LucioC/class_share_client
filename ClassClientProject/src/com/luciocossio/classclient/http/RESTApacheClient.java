@@ -37,8 +37,8 @@ public class RESTApacheClient implements RESTJsonClient {
 		String newUrl = httpUtils.addQueryParametersToUrl(location, queryParameters);
 		
 		//Set a timeout of 2 seconds
-		HttpConnectionParams.setConnectionTimeout(client.getParams(), 2 * 1000);
-		HttpConnectionParams.setSoTimeout(client.getParams(), 2 * 1000);
+		HttpConnectionParams.setConnectionTimeout(client.getParams(), 4 * 1000);
+		HttpConnectionParams.setSoTimeout(client.getParams(), 4 * 1000);
 		
 		HttpGet httpGet = new HttpGet(newUrl);
 		HttpResponse httpResponse;
