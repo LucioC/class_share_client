@@ -232,7 +232,7 @@ public class PresentationClient extends ClassClientHTTPCommon {
 
 	public List<String> getCurrentPresentationImageNames() {
 
-		String url = serverUrl + START_PRESENTATION_PATH;
+		String url = serverUrl + PRESENTATION_SLIDES_PATH;
 		
 		ResultMessage message = this.doGet(null, url);
 		
